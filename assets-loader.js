@@ -1,34 +1,7 @@
-/* Decode tutorial artwork before exposing dialogue. Share requests with the game. */
+/* Decode the supplied WebP files before exposing dialogue. Never recompress them. */
 (() => {
   "use strict";
-  const small = matchMedia("(pointer: coarse), (max-width: 700px)").matches;
-  const cssImage = (name) => {
-    const value = getComputedStyle(document.documentElement)
-      .getPropertyValue(name)
-      .trim();
-    return value
-      .slice(4, -1)
-      .trim()
-      .replace(/^["']|["']$/g, "");
-  };
-  async function tutorialFiles(attempt) {
-    const deadline = Date.now() + 25000;
-    // WebKit can run deferred JS before custom properties are computed.
-    // Read the skin lazily, once the stylesheet has reached the style engine.
-    while (true) {
-      const files = {
-        portrait: `assets/${small ? "lunna_novel_mobile" : "lunna_novel_pose"}.webp?v=47${attempt > 1 ? `&retry=${attempt}` : ""}`,
-        frame: cssImage("--dialog-frame"),
-        paper: cssImage("--dialog-paper"),
-        nameplate: cssImage("--dialog-nameplate"),
-      };
-      if (files.frame && files.paper && files.nameplate) return files;
-      if (Date.now() > deadline)
-        throw new Error("Tutorial stylesheet unavailable");
-      await new Promise((resolve) => requestAnimationFrame(resolve));
-    }
-  }
-  let tutorialPromise;
+  const desktopArt = !matchMedia("(pointer: coarse)").matches;
   const pendingImages = new Set();
   const loadImage = (src, label) =>
     new Promise((resolve, reject) => {
@@ -54,22 +27,88 @@
       img.onerror = () => {
         clearTimeout(timer);
         pendingImages.delete(img);
-        reject(
-          new Error(`${label}: artwork unavailable (${src.length} bytes)`),
-        );
+        reject(new Error(`${label}: artwork unavailable`));
       };
       img.src = src;
     });
-  let attempts = 0;
+
+  const canvas = (width, height) => {
+    const element = document.createElement("canvas");
+    element.width = width;
+    element.height = height;
+    return element;
+  };
+  function prepareFrame(parts) {
+    // All three files share one canvas. Overlay them without changing their pixels.
+    const full = canvas(parts[0].naturalWidth, parts[0].naturalHeight);
+    const fullContext = full.getContext("2d");
+    for (const part of parts) fullContext.drawImage(part, 0, 0);
+    // On narrow screens the name ribbon is independent of the flexible body.
+    const nameplate = canvas(720, 202);
+    const nameContext = nameplate.getContext("2d");
+    // Follow the ribbon outline so the paper behind it stays in the body layer.
+    nameContext.beginPath();
+    nameContext.moveTo(4, 0);
+    nameContext.lineTo(720, 0);
+    nameContext.lineTo(720, 65);
+    nameContext.lineTo(647, 113);
+    nameContext.lineTo(694, 202);
+    nameContext.lineTo(592, 179);
+    nameContext.lineTo(76, 179);
+    nameContext.bezierCurveTo(58, 210, 12, 210, 4, 193);
+    nameContext.closePath();
+    nameContext.clip();
+    nameContext.drawImage(full, 120, 0, 720, 202, 0, 0, 720, 202);
+    const body = canvas(2109, 480);
+    const bodyContext = body.getContext("2d");
+    bodyContext.drawImage(full, 0, 109, 2109, 480, 0, 0, 2109, 480);
+    // Continue the supplied straight middle underneath the detached name ribbon.
+    bodyContext.clearRect(118, 0, 730, 100);
+    bodyContext.drawImage(full, 860, 109, 730, 100, 118, 0, 730, 100);
+    function paintFrame(target, width, height) {
+      const density = Math.min(devicePixelRatio || 1, 3);
+      target.width = Math.ceil(width * density);
+      target.height = Math.ceil(height * density);
+      const ctx = target.getContext("2d");
+      ctx.setTransform(density, 0, 0, density, 0, 0);
+      ctx.imageSmoothingQuality = "high";
+      // Only the plain centre/edges stretch. Corners keep the same uniform scale.
+      const sx = [0, 300, 1700, 2109],
+        sy = [0, 70, 310, 480];
+      const dx = [0, 60, width - 81.8, width],
+        dy = [0, 14, height - 34, height];
+      for (let y = 0; y < 3; y++) {
+        for (let x = 0; x < 3; x++) {
+          ctx.drawImage(
+            body,
+            x === 1 ? 900 : sx[x],
+            sy[y],
+            x === 1 ? 700 : sx[x + 1] - sx[x],
+            sy[y + 1] - sy[y],
+            dx[x],
+            dy[y],
+            dx[x + 1] - dx[x],
+            dy[y + 1] - dy[y],
+          );
+        }
+      }
+    }
+    return { originalFrameImage: full, nameplateImage: nameplate, paintFrame };
+  }
+  let tutorialPromise,
+    attempts = 0;
   function prepareTutorial() {
     if (!tutorialPromise) {
-      tutorialPromise = tutorialFiles(++attempts)
-        .then(async (files) => {
-          const images = await Promise.all(
-            Object.entries(files).map(([label, src]) => loadImage(src, label)),
-          );
-          return { ...files, portraitImage: images[0], decodedImages: images };
-        })
+      const query = `?v=48${++attempts > 1 ? `&retry=${attempts}` : ""}`;
+      tutorialPromise = Promise.all(
+        ["lunna", "dial1", "dial2", "dial3"].map((name) =>
+          loadImage(`assets/${name}.webp${query}`, name),
+        ),
+      )
+        .then(([portraitImage, ...parts]) => ({
+          portraitImage,
+          ...prepareFrame(parts),
+        }))
         .catch((error) => {
           tutorialPromise = null;
           throw error;
@@ -91,6 +130,7 @@
     ? Promise.race([prepareTutorial().catch(() => null), skipGate])
     : Promise.resolve();
   window.UgolnyAssets = Object.freeze({
+    desktopArt,
     prepareTutorial,
     initialTutorialReady,
     releaseWorld,

@@ -23,7 +23,7 @@
     [
       'Ах да, у тебя всего <strong>три единицы ХП</strong> <img class="novel-inline-icon" src="assets/hp_fire_full.webp" alt="огонёк здоровья">. <em>Будешь избегать банок — начнёшь терять ХП.</em>',
       "Не спрашивай почему, просто доверься моему <em>богатому опыту воспитания котиков</em>. Так что советую хорошенько целиться — <strong>здоровье, знаешь ли, не бесконечное</strong>.",
-      'А за собранные <strong>примогемы</strong> <img class="novel-inline-icon" src="assets/primogem_ink.webp" alt="примогема"> я даже добавлю немного к твоей <em>скорости запрыгивания в банку</em>! Не благодари, мне совершенно несложно.',
+      'А за собранные <strong>примогемы</strong> <img class="novel-inline-icon" src="assets/primogem_ink.webp?v=48" alt="примогема"> я даже добавлю немного к твоей <em>скорости запрыгивания в банку</em>! Не благодари, мне совершенно несложно.',
     ],
     [
       "Ну вот, инструктаж окончен. Надеюсь, мои советы помогут тебе принять <strong>единственное разумное решение</strong>.",
@@ -109,7 +109,13 @@
   }
   function updateScene() {
     $("novelLine").innerHTML = pages[step].html;
-    $("novelProgress").textContent = `${step + 1} / ${pages.length}`;
+    $("novelProgress").textContent = pages
+      .map((_, i) => (i === step ? "✦" : "✧"))
+      .join(" ");
+    $("novelProgress").setAttribute(
+      "aria-label",
+      `Страница ${step + 1} из ${pages.length}`,
+    );
     $("novelBack").disabled = step === 0;
     $("novelNext").textContent =
       step === pages.length - 1
@@ -151,8 +157,9 @@
       <div class="novel-stage" id="novelStage" role="button" tabindex="0" aria-label="Следующая страница" aria-describedby="novelLine">
         <span id="novelCharacterSlot"></span>
         <div class="novel-paper" id="novelPaper">
-          <div class="novel-skin" aria-hidden="true"></div>
-          <div class="novel-display-name"><span>Лунна</span></div>
+          <span id="novelOriginalFrameSlot"></span>
+          <div class="novel-skin" id="novelSkin" aria-hidden="true"><canvas id="novelBodyCanvas"></canvas></div>
+          <div class="novel-display-name"><span id="novelNameSkinSlot"></span><span>Лунна</span></div>
           <div class="novel-line" id="novelLine" aria-live="polite"></div>
         </div>
       </div>
@@ -160,8 +167,18 @@
         <button class="feature-btn" type="button" id="novelSkip">Пропустить</button>
         <button class="feature-btn" type="button" id="novelBack">← Назад</button>
         <button class="feature-btn" type="button" id="novelNext">Далее →</button>
-      </div><span class="novel-progress" id="novelProgress" aria-label="Страница обучения"></span></div>
+      </div><span class="novel-progress" id="novelProgress" role="img" aria-label="Страница обучения"></span></div>
     </div>`;
+    if (files.originalFrameImage) {
+      files.originalFrameImage.className = "novel-original-skin";
+      files.originalFrameImage.alt = "";
+      files.originalFrameImage.setAttribute("aria-hidden", "true");
+      files.originalFrameImage.draggable = false;
+      $("novelOriginalFrameSlot").replaceWith(files.originalFrameImage);
+    } else $("novelOriginalFrameSlot").remove();
+    files.nameplateImage.className = "novel-name-skin";
+    files.nameplateImage.setAttribute("aria-hidden", "true");
+    $("novelNameSkinSlot").replaceWith(files.nameplateImage);
     files.portraitImage.className = "novel-character";
     files.portraitImage.alt = "Лунна";
     files.portraitImage.draggable = false;
@@ -176,16 +193,24 @@
       advance();
     });
     paperObserver?.disconnect();
-    paperObserver = new ResizeObserver(() => {
+    const paintPaper = () => {
       const paper = $("novelPaper"),
         stage = $("novelStage");
-      if (paper && stage)
+      if (paper && stage) {
         stage.style.setProperty("--paper-height", `${paper.offsetHeight}px`);
-    });
+        files.paintFrame(
+          $("novelBodyCanvas"),
+          paper.clientWidth,
+          paper.clientHeight,
+        );
+      }
+    };
+    paperObserver = new ResizeObserver(paintPaper);
     paperObserver.observe($("novelPaper"));
     updateScene();
     $("novelStage").focus({ preventScroll: true });
     syncViewport();
+    paintPaper();
   }
   function status(message) {
     clearTimeout(statusTimer);
@@ -215,6 +240,12 @@
     root.classList.toggle("is-rotated", rotated);
     const effectiveHeight = rotated ? width : height;
     const effectiveWidth = rotated ? height : width;
+    root.classList.toggle(
+      "tutorial-desktop",
+      window.UgolnyAssets.desktopArt &&
+        effectiveWidth >= 900 &&
+        effectiveHeight >= 420,
+    );
     root.classList.toggle(
       "is-landscape-view",
       effectiveWidth > effectiveHeight,

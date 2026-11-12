@@ -2,7 +2,7 @@
 (() => {
   "use strict";
   const config = {
-    version: 47,
+    version: 48,
     frameWidth: 512,
     frameHeight: 384,
     drawWidth: 316,
@@ -24,12 +24,12 @@
     sceneWidth: 1324,
     sceneHeight: 697,
     files: {
-      backdrop: "assets/back_game.webp?v=47",
-      platform: "assets/platform_game.webp?v=47",
+      backdrop: "assets/back_game.webp?v=48",
+      platform: "assets/platform_game.webp?v=48",
       run: "assets/run_spritesheet.webp?v=47",
       jump: "assets/jump_spritesheet.webp?v=47",
-      jar: "assets/banka.webp?v=47",
-      primogem: "assets/primogem_ink.webp?v=47",
+      jar: "assets/banka.webp?v=48",
+      primogem: "assets/primogem_ink.webp?v=48",
     },
   };
   config.runFrame = (step) =>

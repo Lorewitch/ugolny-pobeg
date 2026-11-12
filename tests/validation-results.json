@@ -1,72 +1,28 @@
 {
-  "version": 47,
+  "version": 48,
   "date": "2026-11-12",
-  "base_version": 46,
+  "base_version": 47,
   "layout": {
+    "profiles": 90,
+    "pages_per_tutorial": 9,
+    "page_checks": 810,
+    "engines": [
+      "chromium",
+      "firefox",
+      "webkit"
+    ],
     "sizes": [
       [
         320,
         480
       ],
       [
-        320,
-        568
-      ],
-      [
-        360,
-        540
-      ],
-      [
-        375,
-        550
-      ],
-      [
         390,
         640
       ],
       [
-        390,
-        744
-      ],
-      [
-        393,
-        659
-      ],
-      [
-        430,
-        740
-      ],
-      [
         568,
         250
-      ],
-      [
-        640,
-        280
-      ],
-      [
-        667,
-        300
-      ],
-      [
-        736,
-        320
-      ],
-      [
-        780,
-        300
-      ],
-      [
-        844,
-        280
-      ],
-      [
-        844,
-        390
-      ],
-      [
-        932,
-        360
       ],
       [
         768,
@@ -77,8 +33,32 @@
         1024
       ],
       [
+        844,
+        320
+      ],
+      [
+        844,
+        390
+      ],
+      [
+        900,
+        420
+      ],
+      [
+        900,
+        560
+      ],
+      [
+        1024,
+        768
+      ],
+      [
         1024,
         1366
+      ],
+      [
+        1366,
+        768
       ],
       [
         1440,
@@ -87,20 +67,93 @@
       [
         1920,
         1080
+      ],
+      [
+        2560,
+        1440
       ]
     ],
-    "engines": [
-      "Chromium with Android emulation",
-      "Firefox with touch emulation",
-      "WebKit with iPhone emulation"
+    "modes": [
+      "normal",
+      "expanded"
     ],
-    "profiles": 126,
-    "pages_per_tutorial": 9,
-    "page_layout_checks": 1134,
-    "game_card_checks": 378,
     "issues": 0,
-    "text_scroll_regions": 0
+    "checks": [
+      "element bounds",
+      "text fits paper",
+      "no text scroll container",
+      "font at least 16px",
+      "portrait decoded",
+      "desktop aspect and layer order",
+      "portrait does not overlap desktop text",
+      "one filled star with correct position",
+      "backwards star position"
+    ]
   },
+  "user_assets": [
+    {
+      "file": "back_game.webp",
+      "bytes": 266190,
+      "identical": true
+    },
+    {
+      "file": "banka.webp",
+      "bytes": 300658,
+      "identical": true
+    },
+    {
+      "file": "dial1.webp",
+      "bytes": 52142,
+      "identical": true
+    },
+    {
+      "file": "dial2.webp",
+      "bytes": 31994,
+      "identical": true
+    },
+    {
+      "file": "dial3.webp",
+      "bytes": 32386,
+      "identical": true
+    },
+    {
+      "file": "lunna.webp",
+      "bytes": 257726,
+      "identical": true
+    },
+    {
+      "file": "platform_game.webp",
+      "bytes": 32354,
+      "identical": true
+    },
+    {
+      "file": "primogem_ink.webp",
+      "bytes": 14284,
+      "identical": true
+    },
+    {
+      "file": "cat_head_ember.webp",
+      "bytes": 62144,
+      "identical": true
+    }
+  ],
+  "game_source": "byte-identical to v47",
+  "collision_masks": "byte-identical to v47",
+  "physics_comparison": {
+    "identical": [
+      "speedAt",
+      "jumpTiming",
+      "interpolateSpacing",
+      "spacingSafety",
+      "breathingRoom",
+      "patternSpacing",
+      "spacingProfiles",
+      "rushPatterns",
+      "patternTiers",
+      "touching"
+    ]
+  },
+  "jar_alpha": "pixel-identical to v46; source width and height unchanged",
   "loading_and_native": [
     {
       "engine": "chromium",
@@ -186,11 +239,27 @@
       "file_protocol_game_and_tutorial": "PASS"
     }
   ],
-  "webkit_repeated_cold_starts": {
-    "runs": 8,
-    "failures": 0
-  },
-  "physics": {
+  "additional_checks": [
+    {
+      "engine": "chromium",
+      "frame_failure_retry": "PASS",
+      "desktop_resize_to_mobile_and_back": "PASS",
+      "keyboard_stars_and_no_outline": "PASS"
+    },
+    {
+      "engine": "firefox",
+      "frame_failure_retry": "PASS",
+      "desktop_resize_to_mobile_and_back": "PASS",
+      "keyboard_stars_and_no_outline": "PASS"
+    },
+    {
+      "engine": "webkit",
+      "frame_failure_retry": "PASS",
+      "desktop_resize_to_mobile_and_back": "PASS",
+      "keyboard_stars_and_no_outline": "PASS"
+    }
+  ],
+  "historical_v47_physics_not_rerun": {
     "stress": [
       {
         "fps": 15,
@@ -279,31 +348,14 @@
     ],
     "hangingMaskChecks": 1908
   },
-  "physics_comparison": {
-    "identical": [
-      "speedAt",
-      "jumpTiming",
-      "interpolateSpacing",
-      "spacingSafety",
-      "breathingRoom",
-      "patternSpacing",
-      "spacingProfiles",
-      "rushPatterns",
-      "patternTiers",
-      "touching"
-    ]
-  },
-  "collision_masks": "byte-identical to v46",
-  "sprite_alpha": [
-    "run_spritesheet: identical",
-    "jump_spritesheet: identical",
-    "banka: identical"
-  ],
-  "assets_bytes": 1402746,
-  "stylesheet_bytes": 166949,
+  "lint": "ESLint passed",
+  "formatting": "Prettier passed for changed code",
+  "assets_bytes": 1588110,
+  "stylesheet_bytes": 169316,
   "limits": [
     "No physical iPhone test",
-    "No device FPS or battery measurement",
-    "Browser system panels depend on browser support"
+    "No device FPS, battery or network benchmark",
+    "Browser panels depend on browser support",
+    "Manual GitHub publication required"
   ]
 }
