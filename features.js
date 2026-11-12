@@ -1,21 +1,16 @@
-/* Tutorial, accessible dialogs and fullscreen display. Physics lives in game.js. */
+/* Responsive tutorial, viewport display and optional native orientation lock. */
 (() => {
   "use strict";
   const api = window.UgolnyGameAPI;
   const $ = (id) => document.getElementById(id);
-  const root = $("gameRoot");
+  const root = $("gameRoot"),
+    host = $("displayHost");
   const backdrop = $("featureBackdrop"),
     dialog = $("featureDialog"),
     content = $("featureContent");
-  const fullscreenButton = $("fullscreenBtn"),
-    rotateHint = $("rotateHint");
-  const portrait = matchMedia(
-    "(orientation: portrait) and (max-width: 800px) and (pointer: coarse)",
-  );
-  const orientation = matchMedia("(orientation: portrait)");
+  const fullscreenButton = $("fullscreenBtn");
+  const coarse = matchMedia("(pointer: coarse)");
   const STORAGE_KEY = "ugolny_tutorial_seen_v3";
-  // Four canonical scenes. Each page is a short part of the EXACT supplied text.
-  // Moving between pages changes text only; portrait and parchment remain mounted.
   const story = [
     [
       "Опять нашкодил? Ну, раз тебе так хочется, то <strong>попробуй сбежать</strong>. Хотя должна признать, твоя уверенность в собственных силах <em>несколько умиляет</em>",
@@ -45,18 +40,18 @@
   );
   let step = 0,
     firstLaunch = false,
-    previousFocus = null;
-  let rotateFocus = null,
-    allowPortrait = false,
-    immersive = false;
-  let orientationLocked = false,
-    fullscreenPending = false,
-    statusTimer;
+    previousFocus = null,
+    openToken = 0;
+  let immersive = false,
+    orientationLocked = false,
+    fullscreenPending = false;
+  let statusTimer,
+    viewportFrame = 0,
+    paperObserver;
   const isOpen = () => !backdrop.hidden;
   const nativeFullscreen = () =>
     document.fullscreenElement || document.webkitFullscreenElement;
-  const isExpanded = () => nativeFullscreen() === root || immersive;
-  const modalOpen = () => isOpen() || !rotateHint.hidden;
+  const isExpanded = () => nativeFullscreen() === host || immersive;
   function seen() {
     try {
       return localStorage.getItem(STORAGE_KEY) === "1";
@@ -64,37 +59,38 @@
       return false;
     }
   }
-  function markSeen() {
-    try {
-      localStorage.setItem(STORAGE_KEY, "1");
-    } catch (_) {
-      /* optional storage */
-    }
-  }
   function syncModal() {
-    const active = modalOpen();
-    root.querySelector(".game-shell").inert = active;
-    document.querySelector(".page-head").inert = active;
-    document.body.classList.toggle("has-modal", active);
-  }
-  function restoreFocus(element) {
-    if (element?.isConnected && !element.closest("[hidden], [inert]"))
-      element.focus({ preventScroll: true });
-    else $("playBtn").focus({ preventScroll: true });
+    root.querySelector(".game-shell").inert = isOpen();
+    document.querySelector(".page-head").inert = isOpen();
+    document.body.classList.toggle("has-modal", isOpen());
   }
   function close() {
     if (!isOpen()) return;
-    if (firstLaunch) markSeen();
+    window.UgolnyAssets.releaseWorld();
+    if (firstLaunch) {
+      try {
+        localStorage.setItem(STORAGE_KEY, "1");
+      } catch (_) {
+        /* optional storage */
+      }
+    }
+    openToken++;
+    paperObserver?.disconnect();
     backdrop.hidden = true;
     content.replaceChildren();
     delete dialog.dataset.mode;
     firstLaunch = false;
     syncModal();
-    restoreFocus(previousFocus);
+    if (
+      previousFocus?.isConnected &&
+      !previousFocus.closest("[inert], [hidden]")
+    )
+      previousFocus.focus({ preventScroll: true });
+    else $("playBtn").focus({ preventScroll: true });
     previousFocus = null;
   }
   function advance(direction = 1) {
-    if (!isOpen()) return;
+    if (!isOpen() || !$("novelStage")) return;
     if (direction < 0) {
       if (step > 0) {
         step--;
@@ -111,50 +107,9 @@
     close();
     if (start) api.begin();
   }
-  function open(first = false) {
-    if (!isOpen()) previousFocus = document.activeElement;
-    api.pause();
-    rotateHint.hidden = true;
-    firstLaunch = first;
-    step = 0;
-    dialog.dataset.mode = "novel";
-    content.innerHTML = `<div class="novel-scene" role="group" aria-label="Обучение Лунны">
-      <div class="novel-stage" id="novelStage" role="button" tabindex="0" aria-label="Следующая страница" aria-describedby="novelLine">
-        <div class="novel-paper">
-          <div class="novel-display-name">Лунна</div>
-          <div class="novel-line" id="novelLine" aria-live="polite"></div>
-        </div>
-        <img class="novel-character" src="assets/lunna_novel_pose.webp" alt="Лунна" draggable="false" decoding="async">
-      </div>
-      <div class="novel-footer">
-        <div class="novel-controls">
-          <button class="feature-btn" type="button" id="novelSkip">Пропустить</button>
-          <button class="feature-btn" type="button" id="novelBack">← Назад</button>
-          <button class="feature-btn" type="button" id="novelNext">Далее →</button>
-        </div>
-        <div class="novel-meta" aria-label="Страницы обучения"><span class="novel-progress" id="novelProgress" aria-hidden="true"></span></div>
-      </div>
-    </div>`;
-    $("novelSkip").onclick = close;
-    $("novelBack").onclick = () => advance(-1);
-    $("novelNext").onclick = () => advance();
-    $("novelStage").addEventListener("pointerdown", (ev) => {
-      if (ev.isPrimary === false || ev.button !== 0) return;
-      if (ev.target.closest(".novel-line")) return;
-      ev.preventDefault();
-      advance();
-    });
-    backdrop.hidden = false;
-    syncModal();
-    updateScene();
-    $("novelStage").focus({ preventScroll: true });
-  }
   function updateScene() {
-    const page = pages[step];
-    $("novelLine").innerHTML = page.html;
-    $("novelProgress").textContent = pages
-      .map((_, i) => (i === step ? "✦" : "✧"))
-      .join(" ");
+    $("novelLine").innerHTML = pages[step].html;
+    $("novelProgress").textContent = `${step + 1} / ${pages.length}`;
     $("novelBack").disabled = step === 0;
     $("novelNext").textContent =
       step === pages.length - 1
@@ -164,24 +119,73 @@
         : "Далее →";
     $("novelStage").setAttribute(
       "aria-label",
-      `Страница ${step + 1} из ${pages.length}. ${step === pages.length - 1 ? "Завершить обучение" : "Следующая страница"}`,
+      `Страница ${step + 1} из ${pages.length}. Следующая страница`,
     );
   }
-  function syncOrientation() {
-    if (!portrait.matches || allowPortrait || isOpen()) {
-      const wasOpen = !rotateHint.hidden;
-      rotateHint.hidden = true;
-      syncModal();
-      if (wasOpen) restoreFocus(rotateFocus);
+  async function open(first = false) {
+    if (!isOpen()) previousFocus = document.activeElement;
+    api.pause();
+    firstLaunch = first;
+    step = 0;
+    const token = ++openToken;
+    dialog.dataset.mode = "loading";
+    content.innerHTML = `<div class="tutorial-loading" role="status"><span class="loading-orbit" aria-hidden="true">✦</span><p id="tutorialLoadText">Загружаем обучение…</p><button class="feature-btn" id="tutorialRetry" type="button" hidden>Повторить</button><button class="feature-btn" id="tutorialCancel" type="button">Пропустить</button></div>`;
+    $("tutorialCancel").onclick = close;
+    $("tutorialRetry").onclick = () => open(firstLaunch);
+    backdrop.hidden = false;
+    syncModal();
+    $("tutorialCancel").focus({ preventScroll: true });
+    let files;
+    try {
+      files = await window.UgolnyAssets.prepareTutorial();
+    } catch (_) {
+      if (token !== openToken || !isOpen()) return;
+      $("tutorialLoadText").textContent =
+        "Не удалось загрузить рисунки. Попробуем ещё раз?";
+      $("tutorialRetry").hidden = false;
       return;
     }
-    if (api.getState() === "running" && rotateHint.hidden) {
-      rotateFocus = document.activeElement;
-      api.pause();
-      rotateHint.hidden = false;
-      syncModal();
-      $("rotateDismiss").focus({ preventScroll: true });
-    }
+    if (token !== openToken || !isOpen()) return;
+    dialog.dataset.mode = "novel";
+    content.innerHTML = `<button class="icon-btn novel-expand" id="novelFullscreen" type="button" aria-label="Во весь экран" title="Во весь экран">⛶</button><div class="novel-scene" role="group" aria-label="Обучение Лунны">
+      <div class="novel-stage" id="novelStage" role="button" tabindex="0" aria-label="Следующая страница" aria-describedby="novelLine">
+        <span id="novelCharacterSlot"></span>
+        <div class="novel-paper" id="novelPaper">
+          <div class="novel-skin" aria-hidden="true"></div>
+          <div class="novel-display-name"><span>Лунна</span></div>
+          <div class="novel-line" id="novelLine" aria-live="polite"></div>
+        </div>
+      </div>
+      <div class="novel-footer"><div class="novel-controls">
+        <button class="feature-btn" type="button" id="novelSkip">Пропустить</button>
+        <button class="feature-btn" type="button" id="novelBack">← Назад</button>
+        <button class="feature-btn" type="button" id="novelNext">Далее →</button>
+      </div><span class="novel-progress" id="novelProgress" aria-label="Страница обучения"></span></div>
+    </div>`;
+    files.portraitImage.className = "novel-character";
+    files.portraitImage.alt = "Лунна";
+    files.portraitImage.draggable = false;
+    $("novelCharacterSlot").replaceWith(files.portraitImage);
+    $("novelSkip").onclick = close;
+    $("novelBack").onclick = () => advance(-1);
+    $("novelNext").onclick = () => advance();
+    $("novelFullscreen").onclick = fullscreen;
+    $("novelStage").addEventListener("pointerdown", (ev) => {
+      if (ev.isPrimary === false || ev.button !== 0) return;
+      ev.preventDefault();
+      advance();
+    });
+    paperObserver?.disconnect();
+    paperObserver = new ResizeObserver(() => {
+      const paper = $("novelPaper"),
+        stage = $("novelStage");
+      if (paper && stage)
+        stage.style.setProperty("--paper-height", `${paper.offsetHeight}px`);
+    });
+    paperObserver.observe($("novelPaper"));
+    updateScene();
+    $("novelStage").focus({ preventScroll: true });
+    syncViewport();
   }
   function status(message) {
     clearTimeout(statusTimer);
@@ -189,55 +193,95 @@
     $("displayStatus").hidden = false;
     statusTimer = setTimeout(() => {
       $("displayStatus").hidden = true;
-    }, 5500);
+    }, 4500);
   }
-  function syncFullscreen() {
+  function syncViewport() {
+    viewportFrame = 0;
+    const vv = window.visualViewport;
+    const width = Math.round(vv?.width || innerWidth),
+      height = Math.round(vv?.height || innerHeight);
     const active = isExpanded();
+    const rotated = active && coarse.matches && width < height;
+    document.documentElement.style.setProperty(
+      "--visible-height",
+      `${height}px`,
+    );
+    document.documentElement.style.setProperty("--visible-width", `${width}px`);
+    host.style.setProperty("--viewport-top", `${vv?.offsetTop || 0}px`);
+    host.style.setProperty("--viewport-left", `${vv?.offsetLeft || 0}px`);
+    host.classList.toggle("is-expanded-host", active);
+    host.classList.toggle("is-immersive-host", immersive);
     root.classList.toggle("is-expanded", active);
-    root.classList.toggle("is-immersive", immersive);
-    document.body.classList.toggle("has-immersive", immersive);
-    fullscreenButton.textContent = active ? "⤢" : "⛶";
+    root.classList.toggle("is-rotated", rotated);
+    const effectiveHeight = rotated ? width : height;
+    const effectiveWidth = rotated ? height : width;
+    root.classList.toggle(
+      "is-landscape-view",
+      effectiveWidth > effectiveHeight,
+    );
+    root.classList.toggle(
+      "is-compact-view",
+      effectiveHeight <= 560 && effectiveWidth > effectiveHeight,
+    );
+    root.classList.toggle(
+      "is-short-view",
+      effectiveHeight <= 480 && effectiveWidth > effectiveHeight,
+    );
+    root.classList.toggle(
+      "is-tiny-view",
+      effectiveHeight <= 280 && effectiveWidth > effectiveHeight,
+    );
+    document.body.classList.toggle("has-immersive", active);
+    document.body.classList.toggle("has-rotated-game", rotated);
     const label = active ? "Выйти из полного экрана" : "Во весь экран";
+    fullscreenButton.textContent = active ? "⤢" : "⛶";
     fullscreenButton.setAttribute("aria-label", label);
     fullscreenButton.setAttribute("aria-pressed", String(active));
     fullscreenButton.title = `${label} (F)`;
+    if ($("novelFullscreen")) {
+      $("novelFullscreen").textContent = active ? "⤢" : "⛶";
+      $("novelFullscreen").setAttribute("aria-label", label);
+      $("novelFullscreen").title = label;
+    }
     if (!active && orientationLocked) {
       try {
         screen.orientation?.unlock();
       } catch (_) {
-        /* optional orientation API */
+        /* optional API */
       }
       orientationLocked = false;
     }
+  }
+  function scheduleViewport() {
+    if (!viewportFrame) viewportFrame = requestAnimationFrame(syncViewport);
   }
   async function fullscreen() {
     if (fullscreenPending) return;
     fullscreenPending = true;
     api.pause();
     try {
-      if (nativeFullscreen() === root) {
-        const exit = document.exitFullscreen || document.webkitExitFullscreen;
-        await exit.call(document);
+      if (nativeFullscreen() === host) {
+        await (document.exitFullscreen || document.webkitExitFullscreen).call(
+          document,
+        );
       } else if (immersive) {
         immersive = false;
       } else {
-        const request = root.requestFullscreen || root.webkitRequestFullscreen;
+        const request = host.requestFullscreen || host.webkitRequestFullscreen;
         try {
-          if (!request) throw new Error("Fullscreen API unavailable");
-          await request.call(root);
+          if (!request) throw new Error("Unavailable");
+          await request.call(host);
+          if (nativeFullscreen() !== host) immersive = true;
         } catch (_) {
           immersive = true;
-          status(
-            "Игра развёрнута на окно браузера. Панели браузера могут остаться видимыми.",
-          );
         }
-        syncFullscreen();
-        if (nativeFullscreen() === root && screen.orientation?.lock) {
+        syncViewport();
+        if (nativeFullscreen() === host && screen.orientation?.lock) {
           try {
             await screen.orientation.lock("landscape");
             orientationLocked = true;
           } catch (_) {
-            /* rotation remains optional */
+            /* CSS landscape remains available */
           }
         }
       }
@@ -245,49 +289,44 @@
       status("Не удалось изменить полноэкранный режим. Попробуй ещё раз.");
     } finally {
       fullscreenPending = false;
-      syncFullscreen();
-      syncOrientation();
+      syncViewport();
     }
   }
-  for (const event of ["fullscreenchange", "webkitfullscreenchange"]) {
+  for (const event of ["fullscreenchange", "webkitfullscreenchange"])
     document.addEventListener(event, () => {
+      if (nativeFullscreen() === host) immersive = false;
       api.pause();
-      syncFullscreen();
-      syncOrientation();
+      syncViewport();
     });
-  }
+  window.addEventListener("resize", scheduleViewport);
+  window.visualViewport?.addEventListener("resize", scheduleViewport);
+  window.visualViewport?.addEventListener("scroll", scheduleViewport);
+  matchMedia("(orientation: portrait)").addEventListener("change", () => {
+    api.pause();
+    scheduleViewport();
+  });
   $("tutorialBtn").onclick = () => open(false);
   fullscreenButton.onclick = fullscreen;
-  $("rotateFullscreen").onclick = fullscreen;
-  $("rotateDismiss").onclick = () => {
-    allowPortrait = true;
-    syncOrientation();
-  };
-  document.addEventListener("ugolny:statechange", syncOrientation);
-  portrait.addEventListener("change", syncOrientation);
-  orientation.addEventListener("change", () => {
-    api.pause();
-    syncOrientation();
-  });
   document.addEventListener("keydown", (ev) => {
-    if (modalOpen() && ev.code === "Tab") {
-      const modal = isOpen() ? dialog : rotateHint;
+    if (isOpen() && ev.code === "Tab") {
       const items = [
-        ...modal.querySelectorAll('button:not(:disabled), [tabindex="0"]'),
+        ...dialog.querySelectorAll(
+          'button:not(:disabled):not([hidden]), [tabindex="0"]',
+        ),
       ];
       const first = items[0],
         last = items.at(-1);
       if (
         ev.shiftKey &&
         (document.activeElement === first ||
-          !modal.contains(document.activeElement))
+          !dialog.contains(document.activeElement))
       ) {
         ev.preventDefault();
         last?.focus();
       } else if (
         !ev.shiftKey &&
         (document.activeElement === last ||
-          !modal.contains(document.activeElement))
+          !dialog.contains(document.activeElement))
       ) {
         ev.preventDefault();
         first?.focus();
@@ -296,8 +335,10 @@
     }
     if (isOpen()) {
       if (ev.repeat) return;
-      const onButton = ev.target.closest?.("button");
-      if ((ev.code === "Space" || ev.code === "Enter") && !onButton) {
+      if (
+        (ev.code === "Space" || ev.code === "Enter") &&
+        !ev.target.closest?.("button")
+      ) {
         ev.preventDefault();
         advance();
       } else if (ev.code === "ArrowLeft") {
@@ -312,9 +353,10 @@
       }
       return;
     }
-    if (ev.code === "Escape" && immersive) {
+    if (ev.code === "Escape" && isExpanded()) {
       ev.preventDefault();
-      fullscreen();
+      api.pause();
+      if (immersive) fullscreen();
       return;
     }
     if (
@@ -323,10 +365,6 @@
       ev.ctrlKey ||
       ev.metaKey ||
       ev.altKey ||
-      modalOpen()
-    )
-      return;
-    if (
       ev.target.closest?.('input, textarea, select, [contenteditable="true"]')
     )
       return;
@@ -335,10 +373,7 @@
       fullscreen();
     }
   });
-  window.UgolnyFeatures = Object.freeze({
-    isOpen: modalOpen,
-    openTutorial: open,
-  });
-  syncFullscreen();
+  window.UgolnyFeatures = Object.freeze({ isOpen, openTutorial: open });
+  syncViewport();
   if (!seen()) open(true);
 })();

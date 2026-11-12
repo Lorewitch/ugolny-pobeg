@@ -6,8 +6,8 @@
     "(pointer:coarse), (max-width:680px)",
   ).matches;
   const W = MOBILE_SCENE ? 1162 : ANIM.sceneWidth;
-  // back_game.webp is 1962 × 802. Use exactly the SAME scale on both axes:
-  // the entire illustration is visible, without a cover-crop or distortion.
+  // Reference scene geometry stays fixed for physics. The responsive camera
+  // extends the visible world and scales the background uniformly to fill it.
   const BACKDROP_SOURCE_WIDTH = 1962,
     BACKDROP_SOURCE_HEIGHT = 802;
   const BACKDROP_SCALE = W / BACKDROP_SOURCE_WIDTH;
@@ -18,6 +18,9 @@
   // room. The canvas grows to include all of both (no clipped lower edge).
   const TABLE_HEIGHT = 230 * BACKDROP_SCALE;
   const H = Math.ceil(FLOOR + TABLE_HEIGHT);
+  let viewWidth = W,
+    viewHeight = H,
+    worldOffsetY = 0;
   const VISUAL_PLATFORM_Y = FLOOR;
   const VISUAL_PLATFORM_H = H - VISUAL_PLATFORM_Y;
   const platformTileWidth = () =>
@@ -126,7 +129,12 @@
   const requiredArtwork = ["backdrop", "platform", "run", "jump", "jar"];
   const load = (path) => {
     const img = new Image();
-    img.src = path;
+    img.fetchPriority = "low";
+    (window.UgolnyAssets?.initialTutorialReady || Promise.resolve()).then(
+      () => {
+        img.src = path;
+      },
+    );
     return img;
   };
   art.backdrop = load(files.backdrop);
@@ -148,7 +156,7 @@
     ui.playBtn.textContent = "Загружаем…";
     const waitForImage = (img) =>
       new Promise((resolve) => {
-        if (img.complete) {
+        if (img.src && img.complete) {
           resolve(canDraw(img));
           return;
         }
@@ -759,7 +767,7 @@
       ? RUNWAY_Y - random(HANG_CLEARANCE_MIN, HANG_CLEARANCE_MAX) - h
       : RUNWAY_Y - h;
     const obj = {
-      x: W + 35 + movedThisFrame - overshoot,
+      x: viewWidth + 35 + movedThisFrame - overshoot,
       y,
       w: width,
       h,
@@ -1008,7 +1016,7 @@
     }
   }
 
-  // Cache the darkened room once. Do not blur, stretch or crop the original image.
+  // Cache a uniformly scaled room for the current viewport; crop the background only.
   // The lamp halo is pre-rendered separately; only its opacity changes per frame.
   const roomLayer = document.createElement("canvas");
   roomLayer.width = W;
@@ -1028,42 +1036,45 @@
     lampCtx.fillStyle = g;
     lampCtx.fillRect(0, 0, 512, 512);
   }
+  let lamp = { x: 0, y: 0, r: 0 };
   function drawBackground(t) {
+    const roomHeight = FLOOR + worldOffsetY;
     if (canDraw(art.backdrop)) {
       if (!cachedRoom) {
-        const scale = W / art.backdrop.naturalWidth;
-        const roomW = art.backdrop.naturalWidth * scale;
-        const roomH = art.backdrop.naturalHeight * scale;
-        roomCtx.drawImage(art.backdrop, 0, 0, roomW, roomH);
+        roomLayer.width = viewWidth;
+        roomLayer.height = Math.ceil(roomHeight);
+        const scale = Math.max(
+          viewWidth / art.backdrop.naturalWidth,
+          roomHeight / art.backdrop.naturalHeight,
+        );
+        const roomW = art.backdrop.naturalWidth * scale,
+          roomH = art.backdrop.naturalHeight * scale;
+        const dx = (viewWidth - roomW) / 2,
+          dy = roomHeight - roomH;
+        roomCtx.drawImage(art.backdrop, dx, dy, roomW, roomH);
         roomCtx.fillStyle = "rgba(10, 9, 22, 0.61)";
-        roomCtx.fillRect(0, 0, W, FLOOR);
-        // Restore a softly feathered pocket of original light around the kerosene lamp
-        // so the room can be darker overall while the flame still feels luminous.
+        roomCtx.fillRect(0, 0, viewWidth, roomHeight);
         const reveal = document.createElement("canvas");
-        reveal.width = W;
-        reveal.height = FLOOR;
+        reveal.width = viewWidth;
+        reveal.height = Math.ceil(roomHeight);
         const rctx = reveal.getContext("2d");
-        rctx.drawImage(art.backdrop, 0, 0, roomW, roomH);
+        rctx.drawImage(art.backdrop, dx, dy, roomW, roomH);
         rctx.globalCompositeOperation = "destination-in";
-        const x = 537 * scale,
-          y = 525 * scale,
+        const x = dx + 537 * scale,
+          y = dy + 525 * scale,
           r = 186 * scale;
         const mask = rctx.createRadialGradient(x, y, r * 0.1, x, y, r);
-        mask.addColorStop(0, "rgba(255,255,255,0.98)");
-        mask.addColorStop(0.24, "rgba(255,255,255,0.82)");
-        mask.addColorStop(0.55, "rgba(255,255,255,0.36)");
+        mask.addColorStop(0, "rgba(255,255,255,.98)");
+        mask.addColorStop(0.24, "rgba(255,255,255,.82)");
+        mask.addColorStop(0.55, "rgba(255,255,255,.36)");
         mask.addColorStop(1, "rgba(255,255,255,0)");
         rctx.fillStyle = mask;
         rctx.fillRect(x - r, y - r, r * 2, r * 2);
         roomCtx.drawImage(reveal, 0, 0);
+        lamp = { x, y, r: 254 * scale };
         cachedRoom = true;
       }
       ctx.drawImage(roomLayer, 0, 0);
-      // Flame is located around (537, 522) in the original 1962 x 802 backdrop.
-      const scale = W / art.backdrop.naturalWidth;
-      const x = 537 * scale,
-        y = 525 * scale,
-        r = 254 * scale;
       const flicker = reducedMotion.matches
         ? 0
         : Math.sin(t * 7.3) * 0.07 +
@@ -1072,14 +1083,20 @@
       ctx.save();
       ctx.globalCompositeOperation = "screen";
       ctx.globalAlpha = 0.82 + flicker;
-      ctx.drawImage(lampHalo, x - r, y - r, r * 2, r * 2);
+      ctx.drawImage(
+        lampHalo,
+        lamp.x - lamp.r,
+        lamp.y - lamp.r,
+        lamp.r * 2,
+        lamp.r * 2,
+      );
       ctx.restore();
     } else {
-      ctx.fillStyle = fillGradient(0, FLOOR, [
+      ctx.fillStyle = fillGradient(0, roomHeight, [
         [0, "#29243f"],
         [1, "#32233e"],
       ]);
-      ctx.fillRect(0, 0, W, FLOOR);
+      ctx.fillRect(0, 0, viewWidth, roomHeight);
     }
   }
 
@@ -1091,9 +1108,9 @@
       const offset = game.floorShift % tileW;
       ctx.save();
       ctx.beginPath();
-      ctx.rect(0, VISUAL_PLATFORM_Y, W, VISUAL_PLATFORM_H);
+      ctx.rect(0, VISUAL_PLATFORM_Y, viewWidth, VISUAL_PLATFORM_H);
       ctx.clip();
-      for (let x = -offset; x < W; x += tileW) {
+      for (let x = -offset; x < viewWidth; x += tileW) {
         ctx.drawImage(
           art.platform,
           x,
@@ -1105,9 +1122,9 @@
       ctx.restore();
     } else {
       ctx.fillStyle = "#4b3347";
-      ctx.fillRect(0, VISUAL_PLATFORM_Y, W, VISUAL_PLATFORM_H);
+      ctx.fillRect(0, VISUAL_PLATFORM_Y, viewWidth, VISUAL_PLATFORM_H);
       ctx.fillStyle = "#e7ad9e";
-      ctx.fillRect(0, VISUAL_PLATFORM_Y, W, 3);
+      ctx.fillRect(0, VISUAL_PLATFORM_Y, viewWidth, 3);
     }
   }
 
@@ -1261,26 +1278,51 @@
   nightMask.width = W;
   nightMask.height = H;
   const nctx = nightMask.getContext("2d");
-  nctx.fillStyle = "rgba(3, 4, 14, 0.96)";
-  nctx.fillRect(0, 0, W, H);
-  nctx.save();
-  nctx.globalCompositeOperation = "destination-out";
-  const lightX = PLAYER_X + 255,
-    lightY = RUNWAY_Y - 90;
-  const lightRadius = Math.min(520, W * 0.47);
-  nctx.translate(lightX, lightY);
-  nctx.scale(1, 0.69);
-  const sight = nctx.createRadialGradient(0, 0, 0, 0, 0, lightRadius);
-  sight.addColorStop(0, "rgba(0, 0, 0, .97)");
-  sight.addColorStop(0.35, "rgba(0, 0, 0, .86)");
-  sight.addColorStop(0.67, "rgba(0, 0, 0, .38)");
-  sight.addColorStop(0.89, "rgba(0, 0, 0, .10)");
-  sight.addColorStop(1, "rgba(0, 0, 0, 0)");
-  nctx.fillStyle = sight;
-  nctx.beginPath();
-  nctx.arc(0, 0, lightRadius, 0, Math.PI * 2);
-  nctx.fill();
-  nctx.restore();
+  function rebuildNightMask() {
+    nightMask.width = viewWidth;
+    nightMask.height = viewHeight;
+    nctx.fillStyle = "rgba(3, 4, 14, 0.96)";
+    nctx.fillRect(0, 0, viewWidth, viewHeight);
+    nctx.save();
+    nctx.globalCompositeOperation = "destination-out";
+    const lightX = PLAYER_X + 255,
+      lightY = RUNWAY_Y - 90 + worldOffsetY;
+    const lightRadius = Math.min(520, W * 0.47);
+    nctx.translate(lightX, lightY);
+    nctx.scale(1, 0.69);
+    const sight = nctx.createRadialGradient(0, 0, 0, 0, 0, lightRadius);
+    sight.addColorStop(0, "rgba(0, 0, 0, .97)");
+    sight.addColorStop(0.35, "rgba(0, 0, 0, .86)");
+    sight.addColorStop(0.67, "rgba(0, 0, 0, .38)");
+    sight.addColorStop(0.89, "rgba(0, 0, 0, .10)");
+    sight.addColorStop(1, "rgba(0, 0, 0, 0)");
+    nctx.fillStyle = sight;
+    nctx.beginPath();
+    nctx.arc(0, 0, lightRadius, 0, Math.PI * 2);
+    nctx.fill();
+    nctx.restore();
+  }
+  rebuildNightMask();
+  function syncCamera() {
+    const area = document.getElementById("gameArea");
+    const width = area.clientWidth,
+      height = area.clientHeight;
+    if (!width || !height) return;
+    const ratio = width / height;
+    const nextWidth = Math.round(Math.max(W, H * ratio));
+    const nextHeight = Math.round(nextWidth / ratio);
+    if (nextWidth === viewWidth && nextHeight === viewHeight) return;
+    viewWidth = nextWidth;
+    viewHeight = nextHeight;
+    worldOffsetY = viewHeight - H;
+    canvas.width = viewWidth;
+    canvas.height = viewHeight;
+    cachedRoom = false;
+    rebuildNightMask();
+  }
+  const cameraObserver = new ResizeObserver(syncCamera);
+  cameraObserver.observe(document.getElementById("gameArea"));
+  syncCamera();
   function drawNight() {
     if (game.nightPhase !== "dark" || game.state !== "running") return;
     const fadeIn = Math.min(1, (game.elapsed - game.nightStart) / 1.15);
@@ -1294,11 +1336,12 @@
   }
 
   function render(t) {
-    ctx.clearRect(0, 0, W, H);
+    ctx.clearRect(0, 0, viewWidth, viewHeight);
     ctx.fillStyle = "#242034";
-    ctx.fillRect(0, 0, W, H);
-    ctx.save();
+    ctx.fillRect(0, 0, viewWidth, viewHeight);
     drawBackground(t);
+    ctx.save();
+    ctx.translate(0, worldOffsetY);
     drawFloor(t);
     for (const s of game.stars) drawPrimogem(s.x, s.y, s.size, s.spin, t);
     for (const o of game.obstacles) drawJar(o);

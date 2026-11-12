@@ -48,13 +48,27 @@ const sandbox = {
     complete = true;
     naturalWidth = 1962;
     naturalHeight = 802;
+    get src() {
+      return this.url || "";
+    }
+    addEventListener(type, callback) {
+      (this.events ||= {})[type] = callback;
+    }
+    removeEventListener(type) {
+      delete this.events?.[type];
+    }
     set src(value) {
       this.url = value;
+      queueMicrotask(() => this.events?.load?.());
       if (value.includes("platform")) {
         this.naturalWidth = 2172;
         this.naturalHeight = 230;
       }
     }
+  },
+  ResizeObserver: class {
+    observe() {}
+    disconnect() {}
   },
   CustomEvent: class {
     constructor(type, options) {
