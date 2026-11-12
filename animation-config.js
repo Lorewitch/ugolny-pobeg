@@ -1,8 +1,8 @@
-/* Shared artwork registration for the game and visual preview. */
+/* Artwork dimensions and animation timing. */
 (() => {
   "use strict";
   const config = {
-    version: 48,
+    version: 49,
     frameWidth: 512,
     frameHeight: 384,
     drawWidth: 316,

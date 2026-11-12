@@ -30,14 +30,7 @@
       "А если нет... Что ж, <strong>физика рано или поздно возьмёт своё</strong>. Я пока выберу для тебя <em>банку попросторнее</em>.",
     ],
   ];
-  const pages = story.flatMap((scene, sceneIndex) =>
-    scene.map((html, pageIndex) => ({
-      html,
-      sceneIndex,
-      pageIndex,
-      scenePages: scene.length,
-    })),
-  );
+  const pages = story.flat();
   let step = 0,
     firstLaunch = false,
     previousFocus = null,
@@ -108,7 +101,7 @@
     if (start) api.begin();
   }
   function updateScene() {
-    $("novelLine").innerHTML = pages[step].html;
+    $("novelLine").innerHTML = pages[step];
     $("novelProgress").textContent = pages
       .map((_, i) => (i === step ? "✦" : "✧"))
       .join(" ");
@@ -169,16 +162,12 @@
         <button class="feature-btn" type="button" id="novelNext">Далее →</button>
       </div><span class="novel-progress" id="novelProgress" role="img" aria-label="Страница обучения"></span></div>
     </div>`;
-    if (files.originalFrameImage) {
-      files.originalFrameImage.className = "novel-original-skin";
-      files.originalFrameImage.alt = "";
-      files.originalFrameImage.setAttribute("aria-hidden", "true");
-      files.originalFrameImage.draggable = false;
-      $("novelOriginalFrameSlot").replaceWith(files.originalFrameImage);
-    } else $("novelOriginalFrameSlot").remove();
-    files.nameplateImage.className = "novel-name-skin";
-    files.nameplateImage.setAttribute("aria-hidden", "true");
-    $("novelNameSkinSlot").replaceWith(files.nameplateImage);
+    files.desktopFrame.className = "novel-original-skin";
+    files.desktopFrame.setAttribute("aria-hidden", "true");
+    $("novelOriginalFrameSlot").replaceWith(files.desktopFrame);
+    files.nameplate.className = "novel-name-skin";
+    files.nameplate.setAttribute("aria-hidden", "true");
+    $("novelNameSkinSlot").replaceWith(files.nameplate);
     files.portraitImage.className = "novel-character";
     files.portraitImage.alt = "Лунна";
     files.portraitImage.draggable = false;
@@ -198,11 +187,12 @@
         stage = $("novelStage");
       if (paper && stage) {
         stage.style.setProperty("--paper-height", `${paper.offsetHeight}px`);
-        files.paintFrame(
-          $("novelBodyCanvas"),
-          paper.clientWidth,
-          paper.clientHeight,
-        );
+        if (!root.classList.contains("tutorial-desktop"))
+          files.paintFrame(
+            $("novelBodyCanvas"),
+            paper.clientWidth,
+            paper.clientHeight,
+          );
       }
     };
     paperObserver = new ResizeObserver(paintPaper);
@@ -235,7 +225,6 @@
     host.style.setProperty("--viewport-top", `${vv?.offsetTop || 0}px`);
     host.style.setProperty("--viewport-left", `${vv?.offsetLeft || 0}px`);
     host.classList.toggle("is-expanded-host", active);
-    host.classList.toggle("is-immersive-host", immersive);
     root.classList.toggle("is-expanded", active);
     root.classList.toggle("is-rotated", rotated);
     const effectiveHeight = rotated ? width : height;
@@ -263,7 +252,6 @@
       effectiveHeight <= 280 && effectiveWidth > effectiveHeight,
     );
     document.body.classList.toggle("has-immersive", active);
-    document.body.classList.toggle("has-rotated-game", rotated);
     const label = active ? "Выйти из полного экрана" : "Во весь экран";
     fullscreenButton.textContent = active ? "⤢" : "⛶";
     fullscreenButton.setAttribute("aria-label", label);
@@ -339,6 +327,7 @@
   $("tutorialBtn").onclick = () => open(false);
   fullscreenButton.onclick = fullscreen;
   document.addEventListener("keydown", (ev) => {
+    if (ev.ctrlKey || ev.metaKey || ev.altKey) return;
     if (isOpen() && ev.code === "Tab") {
       const items = [
         ...dialog.querySelectorAll(
@@ -378,6 +367,9 @@
       } else if (ev.code === "ArrowRight") {
         ev.preventDefault();
         advance();
+      } else if (ev.code === "KeyF") {
+        ev.preventDefault();
+        fullscreen();
       } else if (ev.code === "Escape") {
         ev.preventDefault();
         close();
@@ -393,9 +385,6 @@
     if (
       ev.defaultPrevented ||
       ev.repeat ||
-      ev.ctrlKey ||
-      ev.metaKey ||
-      ev.altKey ||
       ev.target.closest?.('input, textarea, select, [contenteditable="true"]')
     )
       return;

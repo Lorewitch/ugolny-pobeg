@@ -3,32 +3,34 @@
   "use strict";
   const desktopArt = !matchMedia("(pointer: coarse)").matches;
   const pendingImages = new Set();
-  const loadImage = (src, label) =>
+  const loadImage = (src, label, priority = "high") =>
     new Promise((resolve, reject) => {
       const img = new Image();
       pendingImages.add(img);
-      img.fetchPriority = "high";
-      const timer = setTimeout(() => {
+      img.fetchPriority = priority;
+      let settled = false;
+      const finish = (error) => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timer);
+        img.onload = img.onerror = null;
         pendingImages.delete(img);
-        reject(new Error(`${label}: artwork timeout`));
-      }, 25000);
+        if (error) reject(error);
+        else resolve(img);
+      };
+      const timer = setTimeout(
+        () => finish(new Error(`${label}: artwork timeout`)),
+        25000,
+      );
       img.onload = async () => {
         try {
           if (img.decode) await img.decode();
-          clearTimeout(timer);
-          pendingImages.delete(img);
-          resolve(img);
+          finish();
         } catch (error) {
-          clearTimeout(timer);
-          pendingImages.delete(img);
-          reject(error);
+          finish(error);
         }
       };
-      img.onerror = () => {
-        clearTimeout(timer);
-        pendingImages.delete(img);
-        reject(new Error(`${label}: artwork unavailable`));
-      };
+      img.onerror = () => finish(new Error(`${label}: artwork unavailable`));
       img.src = src;
     });
 
@@ -65,8 +67,17 @@
     // Continue the supplied straight middle underneath the detached name ribbon.
     bodyContext.clearRect(118, 0, 730, 100);
     bodyContext.drawImage(full, 860, 109, 730, 100, 118, 0, 730, 100);
+    const paintedSizes = new WeakMap();
     function paintFrame(target, width, height) {
+      if (!width || !height) return;
       const density = Math.min(devicePixelRatio || 1, 3);
+      const previous = paintedSizes.get(target);
+      if (
+        previous?.width === width &&
+        previous?.height === height &&
+        previous?.density === density
+      )
+        return;
       target.width = Math.ceil(width * density);
       target.height = Math.ceil(height * density);
       const ctx = target.getContext("2d");
@@ -92,8 +103,9 @@
           );
         }
       }
+      paintedSizes.set(target, { width, height, density });
     }
-    return { originalFrameImage: full, nameplateImage: nameplate, paintFrame };
+    return { desktopFrame: full, nameplate, paintFrame };
   }
   let tutorialPromise,
     attempts = 0;
@@ -131,6 +143,7 @@
     : Promise.resolve();
   window.UgolnyAssets = Object.freeze({
     desktopArt,
+    loadImage,
     prepareTutorial,
     initialTutorialReady,
     releaseWorld,

@@ -122,54 +122,48 @@
   };
 
   const files = ANIM.files;
+  const assets = window.UgolnyAssets;
   const art = {};
-  let artworkReady = false,
-    loadingArtwork = false,
-    startWhenReady = false;
-  const requiredArtwork = ["backdrop", "platform", "run", "jump", "jar"];
-  const load = (path) => {
-    const img = new Image();
-    img.fetchPriority = "low";
-    (window.UgolnyAssets?.initialTutorialReady || Promise.resolve()).then(
-      () => {
-        img.src = path;
-      },
-    );
-    return img;
-  };
-  art.backdrop = load(files.backdrop);
-  art.platform = load(files.platform);
-  art.run = load(files.run);
-  art.jump = load(files.jump);
-  art.jar = load(files.jar);
-  art.primogem = load(files.primogem);
   const collision = window.UgolnyCollision.create();
-  // Pixel masks are bundled in collision-masks.js. No canvas readback, even on file://.
+  // Pixel masks are bundled in collision-masks.js; no canvas readback on file://.
   const canDraw = (img) => img && img.complete && img.naturalWidth > 0;
   const isMenuOpen = () => window.UgolnyFeatures?.isOpen?.() === true;
+  const requiredArtwork = ["backdrop", "platform", "run", "jump", "jar"];
+  let artworkReady = false,
+    loadingArtwork = false,
+    startWhenReady = false,
+    artworkAttempts = 0,
+    optionalArtworkPending = false;
 
-  // Do not start a timed run with invisible obstacles on a slow connection.
+  async function loadArtwork(key, attempt) {
+    const path = files[key] + (attempt > 1 ? `&retry=${attempt}` : "");
+    try {
+      // Give the first tutorial priority; skipping it immediately releases this gate.
+      await assets.initialTutorialReady;
+      art[key] = await assets.loadImage(path, key, "low");
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  // Never start a timed run with invisible or undecoded obstacles.
   async function prepareArtwork() {
     if (loadingArtwork) return;
     loadingArtwork = true;
     ui.playBtn.disabled = true;
     ui.playBtn.textContent = "Загружаем…";
-    const waitForImage = (img) =>
-      new Promise((resolve) => {
-        if (img.src && img.complete) {
-          resolve(canDraw(img));
-          return;
-        }
-        const done = () => {
-          img.removeEventListener("load", done);
-          img.removeEventListener("error", done);
-          resolve(canDraw(img));
-        };
-        img.addEventListener("load", done);
-        img.addEventListener("error", done);
+    const attempt = ++artworkAttempts;
+    if (!canDraw(art.primogem) && !optionalArtworkPending) {
+      optionalArtworkPending = true;
+      loadArtwork("primogem", attempt).finally(() => {
+        optionalArtworkPending = false;
       });
+    }
     const loaded = await Promise.all(
-      requiredArtwork.map((key) => waitForImage(art[key])),
+      requiredArtwork.map(
+        (key) => canDraw(art[key]) || loadArtwork(key, attempt),
+      ),
     );
     artworkReady = loaded.every(Boolean);
     loadingArtwork = false;
@@ -186,9 +180,6 @@
   }
 
   function retryArtwork() {
-    for (const key of requiredArtwork) {
-      if (!canDraw(art[key])) art[key] = load(files[key]);
-    }
     startWhenReady = true;
     prepareArtwork();
   }
@@ -234,7 +225,6 @@
     lastPattern: "",
     rush: false,
     rushCooldown: 0,
-    rushCount: 0,
     nightPhase: "idle",
     nightNext: 38,
     nightStart: 0,
@@ -337,7 +327,6 @@
     game.particles = [];
     game.rush = false;
     game.rushCooldown = 0;
-    game.rushCount = 0;
     game.nightPhase = "idle";
     game.nightNext = 37 + random(0, 6);
     game.nightStart = 0;
@@ -436,22 +425,14 @@
     ui.pauseBtn.setAttribute("aria-label", "Пауза");
     notice("Лунна: «А ну стоять, маленький проказник!»", 3.1);
     sounds.go();
-    document.body.classList.add("is-playing");
     canvas.focus({ preventScroll: true });
-    notifyState();
     if (document.hidden) togglePause(true);
   }
 
-  function notifyState() {
-    document.dispatchEvent(
-      new CustomEvent("ugolny:statechange", { detail: game.state }),
-    );
-  }
-
   function togglePause(forcePause = false) {
+    if (forcePause) startWhenReady = false;
     if (game.state === "running") {
       game.state = "paused";
-      document.body.classList.remove("is-playing");
       showOverlay("paused");
       ui.pauseBtn.textContent = "▷";
       ui.pauseBtn.setAttribute("aria-label", "Продолжить");
@@ -459,13 +440,11 @@
     } else if (!forcePause && game.state === "paused" && !isMenuOpen()) {
       lastTime = null;
       game.state = "running";
-      document.body.classList.add("is-playing");
       ui.overlay.hidden = true;
       ui.pauseBtn.textContent = "Ⅱ";
       ui.pauseBtn.setAttribute("aria-label", "Пауза");
       canvas.focus({ preventScroll: true });
     }
-    notifyState();
   }
 
   function finish() {
@@ -481,10 +460,8 @@
     ui.resultBest.textContent = game.best;
     ui.resultGems.textContent = game.gems;
     ui.best.innerHTML = `${pad(game.best)} <small>м</small>`;
-    document.body.classList.remove("is-playing");
     showOverlay("over");
     ui.playBtn.focus();
-    notifyState();
     chirp(260, 0.33, "triangle", 0.12, 115);
   }
 
@@ -728,7 +705,6 @@
     game.rush = game.rushCooldown === 0 && Math.random() < chance;
     if (game.rush) {
       game.rushCooldown = 1;
-      game.rushCount++;
     }
     const list = game.rush ? rushPatterns : tier.patterns;
     let choice = list[Math.floor(Math.random() * list.length)];
@@ -1399,17 +1375,9 @@
       }
     } else if (ev.code === "KeyM" && !ev.repeat) {
       ui.soundBtn.click();
-    } else if (
-      ev.code === "KeyR" &&
-      !ev.repeat &&
-      !ev.ctrlKey &&
-      !ev.metaKey &&
-      !ev.altKey
-    ) {
-      if (!["INPUT", "TEXTAREA"].includes(ev.target?.tagName)) {
-        ev.preventDefault();
-        restartRun();
-      }
+    } else if (ev.code === "KeyR" && !ev.repeat) {
+      ev.preventDefault();
+      restartRun();
     }
   });
   canvas.addEventListener("pointerdown", (ev) => {

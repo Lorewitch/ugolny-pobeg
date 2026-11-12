@@ -1,20 +1,203 @@
 {
-  "version": 48,
+  "version": 49,
   "date": "2026-11-12",
-  "base_version": 47,
+  "base_version": 48,
   "layout": {
-    "profiles": 90,
+    "profiles": 144,
     "pages_per_tutorial": 9,
-    "page_checks": 810,
+    "page_checks": 1296,
     "engines": [
       "chromium",
       "firefox",
       "webkit"
     ],
+    "screen_profiles": [
+      {
+        "size": [
+          900,
+          420
+        ],
+        "touch": false
+      },
+      {
+        "size": [
+          900,
+          560
+        ],
+        "touch": false
+      },
+      {
+        "size": [
+          1024,
+          768
+        ],
+        "touch": false
+      },
+      {
+        "size": [
+          1366,
+          768
+        ],
+        "touch": false
+      },
+      {
+        "size": [
+          1440,
+          900
+        ],
+        "touch": false
+      },
+      {
+        "size": [
+          1920,
+          1080
+        ],
+        "touch": false
+      },
+      {
+        "size": [
+          2560,
+          1440
+        ],
+        "touch": false
+      },
+      {
+        "size": [
+          1024,
+          1366
+        ],
+        "touch": false
+      },
+      {
+        "size": [
+          768,
+          900
+        ],
+        "touch": false
+      },
+      {
+        "size": [
+          320,
+          480
+        ],
+        "touch": true
+      },
+      {
+        "size": [
+          390,
+          640
+        ],
+        "touch": true
+      },
+      {
+        "size": [
+          568,
+          250
+        ],
+        "touch": true
+      },
+      {
+        "size": [
+          844,
+          320
+        ],
+        "touch": true
+      },
+      {
+        "size": [
+          844,
+          390
+        ],
+        "touch": true
+      },
+      {
+        "size": [
+          820,
+          1024
+        ],
+        "touch": true
+      },
+      {
+        "size": [
+          360,
+          540
+        ],
+        "touch": true
+      },
+      {
+        "size": [
+          375,
+          550
+        ],
+        "touch": true
+      },
+      {
+        "size": [
+          430,
+          740
+        ],
+        "touch": true
+      },
+      {
+        "size": [
+          640,
+          280
+        ],
+        "touch": true
+      },
+      {
+        "size": [
+          667,
+          300
+        ],
+        "touch": true
+      },
+      {
+        "size": [
+          736,
+          320
+        ],
+        "touch": true
+      },
+      {
+        "size": [
+          932,
+          430
+        ],
+        "touch": true
+      },
+      {
+        "size": [
+          1024,
+          768
+        ],
+        "touch": true
+      },
+      {
+        "size": [
+          1280,
+          800
+        ],
+        "touch": true
+      }
+    ],
+    "modes": [
+      "normal",
+      "expanded"
+    ],
+    "issues": 0,
+    "foreground_portrait_and_text_separation": "PASS on desktop and mobile landscape"
+  },
+  "game_cards": {
+    "checks": 216,
     "sizes": [
       [
         320,
         480
+      ],
+      [
+        375,
+        550
       ],
       [
         390,
@@ -25,12 +208,8 @@
         250
       ],
       [
-        768,
-        900
-      ],
-      [
-        820,
-        1024
+        640,
+        280
       ],
       [
         844,
@@ -41,119 +220,120 @@
         390
       ],
       [
-        900,
-        420
+        932,
+        430
       ],
       [
-        900,
-        560
+        768,
+        900
       ],
       [
-        1024,
-        768
+        820,
+        1024
       ],
       [
         1024,
         1366
       ],
       [
-        1366,
-        768
-      ],
-      [
         1440,
         900
-      ],
-      [
-        1920,
-        1080
-      ],
-      [
-        2560,
-        1440
       ]
     ],
-    "modes": [
-      "normal",
-      "expanded"
-    ],
-    "issues": 0,
-    "checks": [
-      "element bounds",
-      "text fits paper",
-      "no text scroll container",
-      "font at least 16px",
-      "portrait decoded",
-      "desktop aspect and layer order",
-      "portrait does not overlap desktop text",
-      "one filled star with correct position",
-      "backwards star position"
-    ]
+    "issues": 0
   },
-  "user_assets": [
+  "behavior": [
     {
-      "file": "back_game.webp",
-      "bytes": 266190,
-      "identical": true
+      "engine": "chromium",
+      "test": "keyboard_controls",
+      "status": "PASS"
     },
     {
-      "file": "banka.webp",
-      "bytes": 300658,
-      "identical": true
+      "engine": "chromium",
+      "test": "first_visit_tutorial_and_focus",
+      "status": "PASS"
     },
     {
-      "file": "dial1.webp",
-      "bytes": 52142,
-      "identical": true
+      "engine": "chromium",
+      "test": "blocked_storage",
+      "status": "PASS"
     },
     {
-      "file": "dial2.webp",
-      "bytes": 31994,
-      "identical": true
+      "engine": "chromium",
+      "test": "hung_image_timeout_and_retry",
+      "status": "PASS"
     },
     {
-      "file": "dial3.webp",
-      "bytes": 32386,
-      "identical": true
+      "engine": "chromium",
+      "test": "image_decode_failure_and_retry",
+      "status": "PASS"
     },
     {
-      "file": "lunna.webp",
-      "bytes": 257726,
-      "identical": true
+      "engine": "chromium",
+      "test": "record_validation",
+      "status": "PASS"
     },
     {
-      "file": "platform_game.webp",
-      "bytes": 32354,
-      "identical": true
+      "engine": "firefox",
+      "test": "keyboard_controls",
+      "status": "PASS"
     },
     {
-      "file": "primogem_ink.webp",
-      "bytes": 14284,
-      "identical": true
+      "engine": "firefox",
+      "test": "first_visit_tutorial_and_focus",
+      "status": "PASS"
     },
     {
-      "file": "cat_head_ember.webp",
-      "bytes": 62144,
-      "identical": true
+      "engine": "firefox",
+      "test": "blocked_storage",
+      "status": "PASS"
+    },
+    {
+      "engine": "firefox",
+      "test": "hung_image_timeout_and_retry",
+      "status": "PASS"
+    },
+    {
+      "engine": "firefox",
+      "test": "image_decode_failure_and_retry",
+      "status": "PASS"
+    },
+    {
+      "engine": "firefox",
+      "test": "record_validation",
+      "status": "PASS"
+    },
+    {
+      "engine": "webkit",
+      "test": "keyboard_controls",
+      "status": "PASS"
+    },
+    {
+      "engine": "webkit",
+      "test": "first_visit_tutorial_and_focus",
+      "status": "PASS"
+    },
+    {
+      "engine": "webkit",
+      "test": "blocked_storage",
+      "status": "PASS"
+    },
+    {
+      "engine": "webkit",
+      "test": "hung_image_timeout_and_retry",
+      "status": "PASS"
+    },
+    {
+      "engine": "webkit",
+      "test": "image_decode_failure_and_retry",
+      "status": "PASS"
+    },
+    {
+      "engine": "webkit",
+      "test": "record_validation",
+      "status": "PASS"
     }
   ],
-  "game_source": "byte-identical to v47",
-  "collision_masks": "byte-identical to v47",
-  "physics_comparison": {
-    "identical": [
-      "speedAt",
-      "jumpTiming",
-      "interpolateSpacing",
-      "spacingSafety",
-      "breathingRoom",
-      "patternSpacing",
-      "spacingProfiles",
-      "rushPatterns",
-      "patternTiers",
-      "touching"
-    ]
-  },
-  "jar_alpha": "pixel-identical to v46; source width and height unchanged",
   "loading_and_native": [
     {
       "engine": "chromium",
@@ -259,7 +439,125 @@
       "keyboard_stars_and_no_outline": "PASS"
     }
   ],
-  "historical_v47_physics_not_rerun": {
+  "queued_start_cancellation": [
+    {
+      "engine": "chromium",
+      "queued_start_cancelled_by_fullscreen_pause": "PASS"
+    },
+    {
+      "engine": "firefox",
+      "queued_start_cancelled_by_fullscreen_pause": "PASS"
+    },
+    {
+      "engine": "webkit",
+      "queued_start_cancelled_by_fullscreen_pause": "PASS"
+    }
+  ],
+  "static_audit": {
+    "parsed_scripts": 5,
+    "dead_game_fields": [],
+    "duplicate_html_ids": [],
+    "missing_assets": [],
+    "unreferenced_assets": [],
+    "embedded_legacy_art": false,
+    "external_runtime_urls": []
+  },
+  "lint": "PASS: ESLint",
+  "format": "PASS: Prettier on scripts except packed masks, plus CSS/HTML/test",
+  "assets": [
+    {
+      "file": "back_game.webp",
+      "bytes": 266190,
+      "sha256": "17f0b2e16357d9618cbff0664f9587eb500ef8a5570fc23b0d4bd6cd0655ff64",
+      "unchanged_from_v48": true
+    },
+    {
+      "file": "banka.webp",
+      "bytes": 300658,
+      "sha256": "42f5edfd3f22919a733bf8361aea3095dba1398ce307de47a3bbe74d97439aca",
+      "unchanged_from_v48": true
+    },
+    {
+      "file": "cat_head_ember.webp",
+      "bytes": 62144,
+      "sha256": "4562780d51677b0602b96b417ceeac5d8660f3eef47aa0b14b564ea3684b971b",
+      "unchanged_from_v48": true
+    },
+    {
+      "file": "dial1.webp",
+      "bytes": 52142,
+      "sha256": "bd9747620f2568892c1bed4eec749c9e1dc623f319a3da29ec939ef2dbfbf4ed",
+      "unchanged_from_v48": true
+    },
+    {
+      "file": "dial2.webp",
+      "bytes": 31994,
+      "sha256": "8fe7c33637980e519c1eb000d604faf117534ea40590662896a5ab93275f66b9",
+      "unchanged_from_v48": true
+    },
+    {
+      "file": "dial3.webp",
+      "bytes": 32386,
+      "sha256": "fb9a8e3610676ff7c5b168ef6d58bb76b0d74d1994dc9bf78e97c3652b040655",
+      "unchanged_from_v48": true
+    },
+    {
+      "file": "favicon.svg",
+      "bytes": 449,
+      "sha256": "13a9a8acc0528dd50a20d33995f6411a0ac13a9ba0bfacec25d9e8c15a941b70",
+      "unchanged_from_v48": true
+    },
+    {
+      "file": "hp_fire_empty.webp",
+      "bytes": 5816,
+      "sha256": "b62c5d13004a9a42fc22790073532f7107c236f6dd4dfb97b92c07f2bf21e031",
+      "unchanged_from_v48": true
+    },
+    {
+      "file": "hp_fire_full.webp",
+      "bytes": 6952,
+      "sha256": "e75182f6c2cd8fcd69c01ad9aabccecc4dd0e70bfd41892e80be39a863e48cde",
+      "unchanged_from_v48": true
+    },
+    {
+      "file": "jump_spritesheet.webp",
+      "bytes": 261852,
+      "sha256": "aa9d56b7bbdd900d79e0380a6f54a0f9651c7c0889a76d6c13ef770f426b6f33",
+      "unchanged_from_v48": true
+    },
+    {
+      "file": "lunna.webp",
+      "bytes": 257726,
+      "sha256": "2df06c61887ad9d69f51d42325a6753b99ce0d61db72f6d7228f29d42aae8832",
+      "unchanged_from_v48": true
+    },
+    {
+      "file": "platform_game.webp",
+      "bytes": 32354,
+      "sha256": "0e4e18d76d647ecab65d6d5dc91ea159ab66b774f19db509e4e56ed9964bcc3c",
+      "unchanged_from_v48": true
+    },
+    {
+      "file": "primogem_ink.webp",
+      "bytes": 14284,
+      "sha256": "8c47c0c7af8c287154baeb638f36d6ec7480a758820603e25d093184f1aa25a2",
+      "unchanged_from_v48": true
+    },
+    {
+      "file": "run_spritesheet.webp",
+      "bytes": 261946,
+      "sha256": "f8b7a5c93286c52f377f7b9fed8204155f46f0f4994ff91f5e8c964a1d967f13",
+      "unchanged_from_v48": true
+    },
+    {
+      "file": "woodland_frame.svg",
+      "bytes": 1217,
+      "sha256": "8ab1fa9cf4b1636ba3d38333091aaa2960d07f644c6a4e9833bbb2729efa4bcc",
+      "unchanged_from_v48": true
+    }
+  ],
+  "collision_masks": "byte-identical to v48",
+  "physics": {
     "stress": [
       {
         "fps": 15,
@@ -348,14 +646,39 @@
     ],
     "hangingMaskChecks": 1908
   },
-  "lint": "ESLint passed",
-  "formatting": "Prettier passed for changed code",
-  "assets_bytes": 1588110,
-  "stylesheet_bytes": 169316,
+  "physics_comparison": {
+    "base_version": 43,
+    "identical": [
+      "speedAt",
+      "jumpTiming",
+      "interpolateSpacing",
+      "spacingSafety",
+      "breathingRoom",
+      "patternSpacing",
+      "spacingProfiles",
+      "rushPatterns",
+      "patternTiers",
+      "touching"
+    ]
+  },
+  "cleanup": {
+    "css_before_bytes": 169316,
+    "css_after_bytes": 26168,
+    "css_saved_bytes": 143148,
+    "removed": [
+      "three unused embedded artwork variables",
+      "unused scene metadata and rush counter",
+      "unconsumed state event",
+      "unconsumed marker classes",
+      "duplicate keyboard guards and CSS rules",
+      "separate image readiness implementation"
+    ]
+  },
   "limits": [
-    "No physical iPhone test",
-    "No device FPS, battery or network benchmark",
-    "Browser panels depend on browser support",
+    "Automated browsers and visual screenshots; no physical iPhone test",
+    "No hardware FPS, battery or network benchmark",
+    "Synthetic stress uses fixed randomness and invulnerability",
+    "Browser system panels depend on browser support",
     "Manual GitHub publication required"
   ]
 }

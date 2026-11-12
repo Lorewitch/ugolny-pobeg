@@ -38,7 +38,7 @@ function element(id) {
     });
   return elements.get(id);
 }
-const storage = new Map();
+const storage = new Map([["ugolny_tutorial_seen_v3", "1"]]);
 const sandbox = {
   console,
   atob,
@@ -51,15 +51,9 @@ const sandbox = {
     get src() {
       return this.url || "";
     }
-    addEventListener(type, callback) {
-      (this.events ||= {})[type] = callback;
-    }
-    removeEventListener(type) {
-      delete this.events?.[type];
-    }
     set src(value) {
       this.url = value;
-      queueMicrotask(() => this.events?.load?.());
+      queueMicrotask(() => this.onload?.());
       if (value.includes("platform")) {
         this.naturalWidth = 2172;
         this.naturalHeight = 230;
@@ -69,12 +63,6 @@ const sandbox = {
   ResizeObserver: class {
     observe() {}
     disconnect() {}
-  },
-  CustomEvent: class {
-    constructor(type, options) {
-      this.type = type;
-      this.detail = options.detail;
-    }
   },
   localStorage: {
     getItem: (key) => storage.get(key) ?? null,
@@ -88,18 +76,23 @@ const sandbox = {
     getElementById: (id) => element("#" + id),
     createElement: () => element(Symbol()),
     addEventListener: noop,
-    dispatchEvent: noop,
   },
   addEventListener: noop,
   requestAnimationFrame: (cb) => {
     sandbox.frame = cb;
   },
   setTimeout: noop,
+  clearTimeout: noop,
 };
 sandbox.window = sandbox;
 sandbox.Math.random = () => 0.5;
 const context = vm.createContext(sandbox);
-for (const file of ["animation-config.js", "collision-masks.js", "game.js"]) {
+for (const file of [
+  "animation-config.js",
+  "assets-loader.js",
+  "collision-masks.js",
+  "game.js",
+]) {
   let source = fs.readFileSync(path.join(root, file), "utf8");
   if (file === "game.js")
     source = source.replace(
