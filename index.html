@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self' file:; style-src 'self' file: 'unsafe-inline'; img-src 'self' file: data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"
+    />
+    <meta name="theme-color" content="#19172c" />
+    <meta
+      name="description"
+      content="Угольный побег — уютная мини-игра Очага. Помоги угольному котику перепрыгивать банки Лунны!"
+    />
+    <title>Угольный побег · Мини-игра Очага</title>
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="style.css?v=46" />
+    <link rel="preload" as="image" href="assets/lunna_novel_pose.webp" />
+    <link rel="preload" as="image" href="assets/novel_dialog_box.webp" />
+    <script src="animation-config.js?v=44" defer></script>
+    <script src="collision-masks.js?v=44" defer></script>
+    <script src="game.js?v=44" defer></script>
+    <script src="features.js?v=46" defer></script>
+  </head>
+  <body>
+    <div class="back-stars" aria-hidden="true"></div>
+    <main class="page">
+      <header class="page-head">
+        <div class="eyebrow"><span>✧</span> МИНИ-ИГРА ОЧАГА <span>✧</span></div>
+        <h1>
+          Угольный <span>побег</span
+          ><span class="sparkle" aria-hidden="true">✦</span>
+        </h1>
+        <p>
+          В Очаге нет тюрем — только баночки. И один очень быстрый нарушитель
+          порядка!
+        </p>
+      </header>
+
+      <div class="game-root" id="gameRoot">
+        <section class="game-shell" aria-label="Угольный побег — игровое поле">
+          <div class="hud" aria-label="Показатели побега">
+            <div class="hud-vitals" aria-label="Здоровье и примогемы">
+              <div class="hud-health">
+                <span class="hud-caption">ЗДОРОВЬЕ</span>
+                <div
+                  class="hearts"
+                  id="hearts"
+                  aria-label="Здоровье: 3 из 3"
+                  aria-live="polite"
+                >
+                  <span class="heart-icon" aria-hidden="true"></span
+                  ><span class="heart-icon" aria-hidden="true"></span
+                  ><span class="heart-icon" aria-hidden="true"></span>
+                </div>
+              </div>
+              <div class="hud-gems">
+                <span class="hud-caption">СОБРАНО</span>
+                <span
+                  class="gem-count"
+                  aria-live="polite"
+                  aria-label="Собрано примогем за этот побег: 0"
+                  id="gemCounter"
+                  title="Собрано примогем"
+                  ><img src="assets/primogem_ink.webp" alt="" /><b id="gemCount"
+                    >x0</b
+                  ></span
+                >
+              </div>
+            </div>
+            <div class="hud-center hud-score" aria-live="off">
+              <span class="hud-caption">ПРОБЕЖАЛИ</span>
+              <strong id="score">0000 <small>м</small></strong>
+            </div>
+            <div class="hud-speed">
+              <span class="hud-caption">СКОРОСТЬ</span>
+              <strong class="hud-speed-value" id="speedLabel">×1,0</strong>
+            </div>
+            <div class="hud-best best-block">
+              <span class="hud-caption">РЕКОРД</span>
+              <strong id="best">0000 <small>м</small></strong>
+            </div>
+            <div class="hud-actions" aria-label="Управление">
+              <button
+                class="icon-btn help-btn"
+                id="tutorialBtn"
+                type="button"
+                aria-label="Обучение"
+                title="Обучение"
+              >
+                ?
+              </button>
+              <button
+                class="icon-btn reset-btn"
+                id="restartBtn"
+                type="button"
+                aria-label="Начать забег заново"
+                title="Начать заново (R)"
+              >
+                ↻
+              </button>
+              <button
+                class="icon-btn"
+                id="soundBtn"
+                type="button"
+                aria-label="Включить звук"
+                aria-pressed="false"
+                title="Звук (M)"
+              >
+                ♫
+              </button>
+              <button
+                class="icon-btn fullscreen-btn"
+                id="fullscreenBtn"
+                type="button"
+                aria-label="Во весь экран"
+                title="Полный экран (F)"
+              >
+                ⛶
+              </button>
+              <button
+                class="icon-btn"
+                id="pauseBtn"
+                type="button"
+                aria-label="Пауза"
+                title="Пауза (P)"
+                disabled
+              >
+                Ⅱ
+              </button>
+            </div>
+          </div>
+          <div class="canvas-wrap" id="gameArea">
+            <canvas
+              id="stage"
+              width="1324"
+              height="697"
+              tabindex="0"
+              aria-label="Котик бежит слева направо, банки приближаются справа. Нажмите пробел, стрелку вверх или коснитесь игрового поля для прыжка."
+              >Для игры нужен браузер с поддержкой Canvas и JavaScript.</canvas
+            >
+            <div class="vignette" aria-hidden="true"></div>
+            <div class="onstage-note" id="gameNote" aria-live="polite"></div>
+            <div
+              class="overlay"
+              id="overlay"
+              role="dialog"
+              aria-labelledby="panelTitle"
+              aria-describedby="panelText"
+            >
+              <div class="paper-panel">
+                <div class="panel-decor">✦　☾　✦</div>
+                <img
+                  class="cat-head"
+                  src="assets/cat_head_ember.webp"
+                  alt=""
+                  aria-hidden="true"
+                  draggable="false"
+                />
+                <span class="panel-kicker" id="panelKicker"
+                  >ОЧАГ ПРЕДСТАВЛЯЕТ</span
+                >
+                <h2 id="panelTitle">Угольный побег!</h2>
+                <p id="panelText">
+                  Угольный котик сбежал от Лунны. Но впереди — целая дорожка
+                  волшебных банок! Перепрыгивай ловушки, пока хозяйка тебя не
+                  поймала.
+                </p>
+                <div class="result-stats" id="resultStats" hidden>
+                  <div>
+                    <strong id="resultScore">0</strong><span>метров</span>
+                  </div>
+                  <div>
+                    <strong id="resultBest">0</strong><span>рекорд</span>
+                  </div>
+                  <div class="result-gems">
+                    <strong id="resultGems">0</strong><span>примогем</span>
+                  </div>
+                </div>
+                <button class="play-button" id="playBtn" type="button">
+                  Побежали! <span aria-hidden="true">✦</span>
+                </button>
+                <p class="panel-tip" id="panelTip">
+                  Пробел / ↑ / W — прыжок · или нажми на экран
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+        <div class="feature-backdrop" id="featureBackdrop" hidden>
+          <section
+            class="feature-dialog"
+            id="featureDialog"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Обучение Лунны"
+            tabindex="-1"
+          >
+            <div id="featureContent"></div>
+          </section>
+        </div>
+        <div
+          class="rotate-hint"
+          id="rotateHint"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Поворот устройства"
+          tabindex="-1"
+          hidden
+        >
+          <strong>↻ Поверни устройство</strong>
+          <p>
+            «Угольный побег» удобнее играть в альбомной ориентации. После
+            поворота игровое поле станет шире.
+          </p>
+          <button type="button" id="rotateFullscreen">⛶ Во весь экран</button>
+          <button type="button" id="rotateDismiss">
+            Продолжить вертикально
+          </button>
+        </div>
+        <p class="display-status" id="displayStatus" role="status" hidden></p>
+      </div>
+      <noscript
+        ><p class="noscript-note">
+          Включи JavaScript в настройках браузера, чтобы играть в «Угольный
+          побег».
+        </p></noscript
+      >
+    </main>
+  </body>
+</html>
