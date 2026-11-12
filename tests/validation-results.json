@@ -1,0 +1,618 @@
+{
+  "date": "2026-11-12",
+  "version": 46,
+  "source_sha256": "9be7c51ddba59cb5078f9bfa30ccb075afd70769d125a9fb46619c74d331918b",
+  "layout": {
+    "cases": 84,
+    "engines": [
+      "Chromium",
+      "Firefox",
+      "WebKit"
+    ],
+    "sizes": [
+      [
+        320,
+        568
+      ],
+      [
+        360,
+        640
+      ],
+      [
+        375,
+        667
+      ],
+      [
+        390,
+        844
+      ],
+      [
+        412,
+        915
+      ],
+      [
+        430,
+        932
+      ],
+      [
+        768,
+        1024
+      ],
+      [
+        820,
+        1180
+      ],
+      [
+        1024,
+        1366
+      ],
+      [
+        568,
+        320
+      ],
+      [
+        640,
+        360
+      ],
+      [
+        667,
+        375
+      ],
+      [
+        736,
+        414
+      ],
+      [
+        780,
+        360
+      ],
+      [
+        844,
+        390
+      ],
+      [
+        915,
+        412
+      ],
+      [
+        960,
+        540
+      ],
+      [
+        1024,
+        600
+      ],
+      [
+        600,
+        800
+      ],
+      [
+        720,
+        480
+      ],
+      [
+        800,
+        600
+      ],
+      [
+        1024,
+        768
+      ],
+      [
+        1280,
+        720
+      ],
+      [
+        1366,
+        768
+      ],
+      [
+        1440,
+        900
+      ],
+      [
+        1920,
+        1080
+      ],
+      [
+        2560,
+        1440
+      ],
+      [
+        3840,
+        2160
+      ]
+    ],
+    "issues": 0
+  },
+  "functional": [
+    {
+      "test": "chromium: tutorial, focus trap, first start",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "test": "chromium: keys, focused buttons, pause, blur",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "test": "chromium: real elapsed time at 15/20/30/60/120 FPS; stalls",
+      "status": "PASS",
+      "detail": [
+        {
+          "fps": 15,
+          "time": 59.99999999999723,
+          "speed": 473.33333333332786,
+          "particles": 5,
+          "obstacles": 3
+        },
+        {
+          "fps": 20,
+          "time": 59.99999999999723,
+          "speed": 473.33333333332786,
+          "particles": 4,
+          "obstacles": 3
+        },
+        {
+          "fps": 30,
+          "time": 59.99999999999569,
+          "speed": 473.33333333332484,
+          "particles": 6,
+          "obstacles": 2
+        },
+        {
+          "fps": 60,
+          "time": 59.99999999996612,
+          "speed": 473.3333333332665,
+          "particles": 5,
+          "obstacles": 3
+        },
+        {
+          "fps": 120,
+          "time": 59.99999999990462,
+          "speed": 473.3333333331452,
+          "particles": 5,
+          "obstacles": 3
+        }
+      ]
+    },
+    {
+      "test": "chromium: gems, fatal collision, results, restart, best",
+      "status": "PASS",
+      "detail": {
+        "bonus": {
+          "score": 125,
+          "gems": 1
+        },
+        "state": "over",
+        "score": 201,
+        "result": 201,
+        "gems": 1,
+        "best": 201
+      }
+    },
+    {
+      "test": "chromium: touch portrait, rotation and safe pause",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "test": "chromium: fullscreen enter, tutorial, exit",
+      "status": "PASS",
+      "detail": "gameRoot"
+    },
+    {
+      "test": "chromium: fullscreen API unavailable fallback",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "test": "chromium: blocked localStorage",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "test": "chromium: failed essential asset and retry",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "test": "firefox: tutorial, focus trap, first start",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "test": "firefox: keys, focused buttons, pause, blur",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "test": "firefox: real elapsed time at 15/20/30/60/120 FPS; stalls",
+      "status": "PASS",
+      "detail": [
+        {
+          "fps": 15,
+          "time": 59.99999999999723,
+          "speed": 473.33333333332786,
+          "particles": 6,
+          "obstacles": 3
+        },
+        {
+          "fps": 20,
+          "time": 59.99999999999723,
+          "speed": 473.33333333332786,
+          "particles": 4,
+          "obstacles": 2
+        },
+        {
+          "fps": 30,
+          "time": 59.99999999999569,
+          "speed": 473.33333333332484,
+          "particles": 6,
+          "obstacles": 3
+        },
+        {
+          "fps": 60,
+          "time": 59.99999999996612,
+          "speed": 473.3333333332665,
+          "particles": 4,
+          "obstacles": 4
+        },
+        {
+          "fps": 120,
+          "time": 59.99999999990462,
+          "speed": 473.3333333331452,
+          "particles": 5,
+          "obstacles": 3
+        }
+      ]
+    },
+    {
+      "test": "firefox: gems, fatal collision, results, restart, best",
+      "status": "PASS",
+      "detail": {
+        "bonus": {
+          "score": 125,
+          "gems": 1
+        },
+        "state": "over",
+        "score": 201,
+        "result": 201,
+        "gems": 1,
+        "best": 201
+      }
+    },
+    {
+      "test": "firefox: touch portrait, rotation and safe pause",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "test": "firefox: fullscreen enter, tutorial, exit",
+      "status": "PASS",
+      "detail": "gameRoot"
+    },
+    {
+      "test": "firefox: fullscreen API unavailable fallback",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "test": "firefox: blocked localStorage",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "test": "firefox: failed essential asset and retry",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "test": "webkit: tutorial, focus trap, first start",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "test": "webkit: keys, focused buttons, pause, blur",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "test": "webkit: real elapsed time at 15/20/30/60/120 FPS; stalls",
+      "status": "PASS",
+      "detail": [
+        {
+          "fps": 15,
+          "time": 59.99999999999723,
+          "speed": 473.33333333332786,
+          "particles": 4,
+          "obstacles": 4
+        },
+        {
+          "fps": 20,
+          "time": 59.99999999999723,
+          "speed": 473.33333333332786,
+          "particles": 5,
+          "obstacles": 3
+        },
+        {
+          "fps": 30,
+          "time": 59.99999999999569,
+          "speed": 473.33333333332484,
+          "particles": 7,
+          "obstacles": 3
+        },
+        {
+          "fps": 60,
+          "time": 59.99999999996612,
+          "speed": 473.3333333332665,
+          "particles": 6,
+          "obstacles": 3
+        },
+        {
+          "fps": 120,
+          "time": 59.99999999990462,
+          "speed": 473.3333333331452,
+          "particles": 5,
+          "obstacles": 3
+        }
+      ]
+    },
+    {
+      "test": "webkit: gems, fatal collision, results, restart, best",
+      "status": "PASS",
+      "detail": {
+        "bonus": {
+          "score": 125,
+          "gems": 1
+        },
+        "state": "over",
+        "score": 201,
+        "result": 201,
+        "gems": 1,
+        "best": 201
+      }
+    },
+    {
+      "test": "webkit: touch portrait, rotation and safe pause",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "test": "webkit: fullscreen enter, tutorial, exit",
+      "status": "PASS",
+      "detail": "gameRoot"
+    },
+    {
+      "test": "webkit: fullscreen API unavailable fallback",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "test": "webkit: blocked localStorage",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "test": "webkit: failed essential asset and retry",
+      "status": "PASS",
+      "detail": null
+    }
+  ],
+  "stress": {
+    "stress": [
+      {
+        "fps": 15,
+        "seconds": 1860,
+        "maxObstacles": 4,
+        "maxParticles": 8
+      },
+      {
+        "fps": 20,
+        "seconds": 1860,
+        "maxObstacles": 4,
+        "maxParticles": 8
+      },
+      {
+        "fps": 30,
+        "seconds": 1860,
+        "maxObstacles": 4,
+        "maxParticles": 8
+      },
+      {
+        "fps": 60,
+        "seconds": 1860,
+        "maxObstacles": 4,
+        "maxParticles": 8
+      },
+      {
+        "fps": 120,
+        "seconds": 1860,
+        "maxObstacles": 4,
+        "maxParticles": 8
+      }
+    ],
+    "isolatedFloorJumps": [
+      {
+        "multiplier": 1,
+        "jumpAt": 2.3425
+      },
+      {
+        "multiplier": 2,
+        "jumpAt": 1.1496
+      },
+      {
+        "multiplier": 3,
+        "jumpAt": 0.7404
+      },
+      {
+        "multiplier": 4,
+        "jumpAt": 0.5345
+      },
+      {
+        "multiplier": 5,
+        "jumpAt": 0.4104
+      },
+      {
+        "multiplier": 6,
+        "jumpAt": 0.3293
+      },
+      {
+        "multiplier": 7,
+        "jumpAt": 0.2715
+      },
+      {
+        "multiplier": 8,
+        "jumpAt": 0.2293
+      },
+      {
+        "multiplier": 9,
+        "jumpAt": 0.1946
+      },
+      {
+        "multiplier": 10,
+        "jumpAt": 0.1678
+      },
+      {
+        "multiplier": 11,
+        "jumpAt": 0.1447
+      },
+      {
+        "multiplier": 12,
+        "jumpAt": 0.1255
+      },
+      {
+        "multiplier": 13,
+        "jumpAt": 0.1102
+      }
+    ],
+    "hangingMaskChecks": 1908
+  },
+  "assets": [
+    {
+      "file": "novel_dialog_box.webp",
+      "original": 1433490,
+      "optimized": 645694,
+      "rgba_identical": true
+    },
+    {
+      "file": "primogem_ink.webp",
+      "original": 41934,
+      "optimized": 32124,
+      "rgba_identical": true
+    },
+    {
+      "file": "run_spritesheet.webp",
+      "original": 1129064,
+      "optimized": 823650,
+      "rgba_identical": true
+    },
+    {
+      "file": "platform_game.webp",
+      "original": 438197,
+      "optimized": 358866,
+      "rgba_identical": true
+    },
+    {
+      "file": "jump_spritesheet.webp",
+      "original": 1161684,
+      "optimized": 824776,
+      "rgba_identical": true
+    },
+    {
+      "file": "banka.webp",
+      "original": 1050505,
+      "optimized": 805420,
+      "rgba_identical": true
+    },
+    {
+      "file": "lunna_novel_pose.webp",
+      "original": 2182098,
+      "optimized": 1240112,
+      "rgba_identical": true
+    },
+    {
+      "file": "hp_fire_empty.webp",
+      "original": 93772,
+      "optimized": 67392,
+      "rgba_identical": true
+    },
+    {
+      "file": "back_game.webp",
+      "original": 2138632,
+      "optimized": 1646914,
+      "rgba_identical": true
+    },
+    {
+      "file": "hp_fire_full.webp",
+      "original": 98094,
+      "optimized": 73558,
+      "rgba_identical": true
+    },
+    {
+      "file": "cat_head_ember.webp",
+      "original": 106389,
+      "optimized": 78718,
+      "rgba_identical": true
+    }
+  ],
+  "physics": {
+    "identical": [
+      "speedAt",
+      "jumpTiming",
+      "interpolateSpacing",
+      "spacingSafety",
+      "breathingRoom",
+      "patternSpacing",
+      "spacingProfiles",
+      "rushPatterns",
+      "patternTiers",
+      "touching"
+    ]
+  },
+  "scope": "Browser automation and emulation; no physical-device or public deployment validation.",
+  "overlay_checks": {
+    "cases": 48,
+    "play_button_outside_card": 0,
+    "file_protocol_engines": 3
+  },
+  "base_audit_version": 44,
+  "focus_followup": [
+    {
+      "engine": "chromium",
+      "outline": "none",
+      "space_controls": "PASS",
+      "decorative_border": "preserved"
+    },
+    {
+      "engine": "firefox",
+      "outline": "none",
+      "space_controls": "PASS",
+      "decorative_border": "preserved"
+    },
+    {
+      "engine": "webkit",
+      "outline": "none",
+      "space_controls": "PASS",
+      "decorative_border": "preserved"
+    }
+  ],
+  "toolbar_followup": {
+    "version": 46,
+    "viewport_profiles": 84,
+    "display_modes": [
+      "normal",
+      "fullscreen"
+    ],
+    "checks": 168,
+    "issues": 0,
+    "engines": [
+      "Chromium",
+      "Firefox",
+      "WebKit"
+    ],
+    "tutorial_open_and_space_advance": "PASS",
+    "no_focus_outline": "PASS"
+  }
+}

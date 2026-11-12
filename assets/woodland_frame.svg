@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="850" viewBox="0 0 1200 850">
+<defs>
+ <linearGradient id="wood" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#2f2227"/><stop offset=".24" stop-color="#593b34"/><stop offset=".53" stop-color="#3f2e2e"/><stop offset=".78" stop-color="#65443a"/><stop offset="1" stop-color="#332429"/></linearGradient>
+</defs>
+<path d="M0 0H1200V850H0Z M66 66H1134V784H66Z" fill="url(#wood)" fill-rule="evenodd"/>
+<rect x="6" y="6" width="1188" height="838" rx="16" fill="none" stroke="#1c161d" stroke-width="12"/>
+<rect x="15" y="15" width="1170" height="820" rx="13" fill="none" stroke="#956b55" stroke-width="3" opacity=".65"/>
+<rect x="55" y="55" width="1090" height="740" rx="4" fill="none" stroke="#1e171f" stroke-width="10"/>
+<rect x="64" y="64" width="1072" height="722" rx="3" fill="none" stroke="#ac7d65" stroke-width="2.5" opacity=".7"/>
+<path d="M78 31 Q220 26 380 32 T710 30 T1124 32 M78 45 Q380 40 680 45 T1124 44 M78 819 Q420 826 690 819 T1124 820" fill="none" stroke="#d8a38b" stroke-width="1.6" opacity=".19"/>
+<path d="M34 78 Q29 240 34 430 T34 774 M1166 78 Q1172 290 1166 460 T1166 774" fill="none" stroke="#d8a38b" stroke-width="1.6" opacity=".17"/>
+</svg>
