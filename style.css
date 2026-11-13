@@ -814,6 +814,13 @@ body.has-immersive {
 .play-button:disabled {
   opacity: 0.7;
 }
+.overlay[data-mode="over"] .play-button:disabled {
+  background: linear-gradient(#c6c3ca, #aaa6af);
+  border-color: #817c87;
+  color: #4e4855;
+  box-shadow: 0 3px 0 #c8c2cc;
+  opacity: 1;
+}
 .play-button:hover:not(:disabled) {
   filter: brightness(1.08);
 }

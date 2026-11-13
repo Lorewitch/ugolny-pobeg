@@ -251,6 +251,30 @@
   };
   ui.best.innerHTML = `${pad(game.best)} <small>м</small>`;
 
+  const REPLAY_DELAY_MS = 3000;
+  let replayReadyAt = 0,
+    replayTimer = null;
+
+  const replayReady = () =>
+    game.state !== "over" || performance.now() >= replayReadyAt;
+
+  function updateReplayCountdown() {
+    replayTimer = null;
+    if (game.state !== "over") return;
+    const remaining = Math.max(0, replayReadyAt - performance.now());
+    const seconds = Math.ceil(remaining / 1000);
+    ui.playBtn.disabled = seconds > 0;
+    ui.playBtn.textContent = seconds ? `Ещё раз! · ${seconds}` : "Ещё раз! ✦";
+    ui.panelTip.textContent = seconds
+      ? "Сначала посмотрим результат"
+      : "Пробел — начать заново";
+    if (seconds)
+      replayTimer = setTimeout(
+        updateReplayCountdown,
+        Math.min(1000, Math.ceil(remaining)),
+      );
+  }
+
   // The MP3 includes 250 ms of cyclic context on both sides. Loop only the
   // original samples so compression cannot add a silent gap at the seam.
   const MUSIC = {
@@ -476,6 +500,10 @@
       return;
     }
     startWhenReady = false;
+    clearTimeout(replayTimer);
+    replayTimer = null;
+    replayReadyAt = 0;
+    ui.playBtn.disabled = false;
     lastTime = null;
     reset();
     game.state = "running";
@@ -520,8 +548,11 @@
     ui.resultBest.textContent = game.best;
     ui.resultGems.textContent = game.gems;
     ui.best.innerHTML = `${pad(game.best)} <small>м</small>`;
+    replayReadyAt = performance.now() + REPLAY_DELAY_MS;
     showOverlay("over");
-    ui.playBtn.focus();
+    updateReplayCountdown();
+    // Keep a held jump key away from native button activation on key release.
+    ui.overlay.focus({ preventScroll: true });
     chirp(260, 0.33, "triangle", 0.12, 115);
   }
 
@@ -584,6 +615,7 @@
   }
 
   function takeAction() {
+    if (!replayReady()) return;
     if (game.state === "ready" || game.state === "over") {
       begin();
       return;
@@ -1394,6 +1426,7 @@
   });
 
   ui.playBtn.addEventListener("click", () => {
+    if (!replayReady()) return;
     if (game.state === "paused") togglePause();
     else begin();
   });
