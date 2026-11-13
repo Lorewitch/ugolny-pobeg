@@ -264,7 +264,7 @@
     const remaining = Math.max(0, replayReadyAt - performance.now());
     const seconds = Math.ceil(remaining / 1000);
     ui.playBtn.disabled = seconds > 0;
-    ui.playBtn.textContent = seconds ? `Ещё раз! · ${seconds}` : "Ещё раз! ✦";
+    ui.playBtn.textContent = seconds ? `Ещё раз! ✦ ${seconds}` : "Ещё раз! ✦";
     ui.panelTip.textContent = seconds
       ? "Сначала посмотрим результат"
       : "Пробел — начать заново";
@@ -1087,8 +1087,6 @@
   // Cache a uniformly scaled room for the current viewport; crop the background only.
   // The lamp halo is pre-rendered separately; only its opacity changes per frame.
   const roomLayer = document.createElement("canvas");
-  roomLayer.width = W;
-  roomLayer.height = Math.ceil(FLOOR);
   const roomCtx = roomLayer.getContext("2d", { alpha: false });
   let cachedRoom = false;
   const lampHalo = document.createElement("canvas");
@@ -1343,8 +1341,6 @@
   // Darkness challenge is composited from one cached, softly feathered mask.
   // The fixed light corridor keeps the cat and nearby jars recognizable.
   const nightMask = document.createElement("canvas");
-  nightMask.width = W;
-  nightMask.height = H;
   const nctx = nightMask.getContext("2d");
   function rebuildNightMask() {
     nightMask.width = viewWidth;
@@ -1410,7 +1406,7 @@
     drawBackground(t);
     ctx.save();
     ctx.translate(0, worldOffsetY);
-    drawFloor(t);
+    drawFloor();
     for (const s of game.stars) drawPrimogem(s.x, s.y, s.size, s.spin, t);
     for (const o of game.obstacles) drawJar(o);
     drawCat(t);

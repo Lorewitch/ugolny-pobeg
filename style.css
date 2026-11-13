@@ -1335,7 +1335,6 @@ body.has-immersive {
   top: 3%;
   width: 25.5%;
   height: 19.5%;
-  background: none;
   font-size: clamp(16px, 3.1cqw, 40px);
 }
 .game-root.tutorial-desktop .novel-display-name span {

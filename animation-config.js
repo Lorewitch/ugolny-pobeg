@@ -2,7 +2,6 @@
 (() => {
   "use strict";
   const config = {
-    version: 49,
     frameWidth: 512,
     frameHeight: 384,
     drawWidth: 316,
@@ -11,7 +10,6 @@
     runFrames: 12,
     runColumns: 4,
     runFps: 29.8,
-    jumpFrames: 12,
     jumpColumns: 4,
     jump: {
       takeoff: 0.04,
@@ -22,7 +20,6 @@
       height: 172,
     },
     sceneWidth: 1324,
-    sceneHeight: 697,
     files: {
       backdrop: "assets/back_game.webp?v=48",
       platform: "assets/platform_game.webp?v=48",

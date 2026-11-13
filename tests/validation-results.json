@@ -1,684 +1,80 @@
 {
-  "version": 49,
-  "date": "2026-11-12",
-  "base_version": 48,
-  "layout": {
-    "profiles": 144,
-    "pages_per_tutorial": 9,
-    "page_checks": 1296,
-    "engines": [
-      "chromium",
-      "firefox",
-      "webkit"
-    ],
-    "screen_profiles": [
-      {
-        "size": [
-          900,
-          420
-        ],
-        "touch": false
-      },
-      {
-        "size": [
-          900,
-          560
-        ],
-        "touch": false
-      },
-      {
-        "size": [
-          1024,
-          768
-        ],
-        "touch": false
-      },
-      {
-        "size": [
-          1366,
-          768
-        ],
-        "touch": false
-      },
-      {
-        "size": [
-          1440,
-          900
-        ],
-        "touch": false
-      },
-      {
-        "size": [
-          1920,
-          1080
-        ],
-        "touch": false
-      },
-      {
-        "size": [
-          2560,
-          1440
-        ],
-        "touch": false
-      },
-      {
-        "size": [
-          1024,
-          1366
-        ],
-        "touch": false
-      },
-      {
-        "size": [
-          768,
-          900
-        ],
-        "touch": false
-      },
-      {
-        "size": [
-          320,
-          480
-        ],
-        "touch": true
-      },
-      {
-        "size": [
-          390,
-          640
-        ],
-        "touch": true
-      },
-      {
-        "size": [
-          568,
-          250
-        ],
-        "touch": true
-      },
-      {
-        "size": [
-          844,
-          320
-        ],
-        "touch": true
-      },
-      {
-        "size": [
-          844,
-          390
-        ],
-        "touch": true
-      },
-      {
-        "size": [
-          820,
-          1024
-        ],
-        "touch": true
-      },
-      {
-        "size": [
-          360,
-          540
-        ],
-        "touch": true
-      },
-      {
-        "size": [
-          375,
-          550
-        ],
-        "touch": true
-      },
-      {
-        "size": [
-          430,
-          740
-        ],
-        "touch": true
-      },
-      {
-        "size": [
-          640,
-          280
-        ],
-        "touch": true
-      },
-      {
-        "size": [
-          667,
-          300
-        ],
-        "touch": true
-      },
-      {
-        "size": [
-          736,
-          320
-        ],
-        "touch": true
-      },
-      {
-        "size": [
-          932,
-          430
-        ],
-        "touch": true
-      },
-      {
-        "size": [
-          1024,
-          768
-        ],
-        "touch": true
-      },
-      {
-        "size": [
-          1280,
-          800
-        ],
-        "touch": true
-      }
-    ],
-    "modes": [
-      "normal",
-      "expanded"
-    ],
-    "issues": 0,
-    "foreground_portrait_and_text_separation": "PASS on desktop and mobile landscape"
-  },
-  "game_cards": {
-    "checks": 216,
-    "sizes": [
-      [
-        320,
-        480
-      ],
-      [
-        375,
-        550
-      ],
-      [
-        390,
-        640
-      ],
-      [
-        568,
-        250
-      ],
-      [
-        640,
-        280
-      ],
-      [
-        844,
-        320
-      ],
-      [
-        844,
-        390
-      ],
-      [
-        932,
-        430
-      ],
-      [
-        768,
-        900
-      ],
-      [
-        820,
-        1024
-      ],
-      [
-        1024,
-        1366
-      ],
-      [
-        1440,
-        900
-      ]
-    ],
-    "issues": 0
-  },
-  "behavior": [
-    {
-      "engine": "chromium",
-      "test": "keyboard_controls",
-      "status": "PASS"
-    },
-    {
-      "engine": "chromium",
-      "test": "first_visit_tutorial_and_focus",
-      "status": "PASS"
-    },
-    {
-      "engine": "chromium",
-      "test": "blocked_storage",
-      "status": "PASS"
-    },
-    {
-      "engine": "chromium",
-      "test": "hung_image_timeout_and_retry",
-      "status": "PASS"
-    },
-    {
-      "engine": "chromium",
-      "test": "image_decode_failure_and_retry",
-      "status": "PASS"
-    },
-    {
-      "engine": "chromium",
-      "test": "record_validation",
-      "status": "PASS"
-    },
-    {
-      "engine": "firefox",
-      "test": "keyboard_controls",
-      "status": "PASS"
-    },
-    {
-      "engine": "firefox",
-      "test": "first_visit_tutorial_and_focus",
-      "status": "PASS"
-    },
-    {
-      "engine": "firefox",
-      "test": "blocked_storage",
-      "status": "PASS"
-    },
-    {
-      "engine": "firefox",
-      "test": "hung_image_timeout_and_retry",
-      "status": "PASS"
-    },
-    {
-      "engine": "firefox",
-      "test": "image_decode_failure_and_retry",
-      "status": "PASS"
-    },
-    {
-      "engine": "firefox",
-      "test": "record_validation",
-      "status": "PASS"
-    },
-    {
-      "engine": "webkit",
-      "test": "keyboard_controls",
-      "status": "PASS"
-    },
-    {
-      "engine": "webkit",
-      "test": "first_visit_tutorial_and_focus",
-      "status": "PASS"
-    },
-    {
-      "engine": "webkit",
-      "test": "blocked_storage",
-      "status": "PASS"
-    },
-    {
-      "engine": "webkit",
-      "test": "hung_image_timeout_and_retry",
-      "status": "PASS"
-    },
-    {
-      "engine": "webkit",
-      "test": "image_decode_failure_and_retry",
-      "status": "PASS"
-    },
-    {
-      "engine": "webkit",
-      "test": "record_validation",
-      "status": "PASS"
-    }
-  ],
-  "loading_and_native": [
-    {
-      "engine": "chromium",
-      "gated_loading": "PASS",
-      "world_deferral": "PASS",
-      "native_host": "displayHost",
-      "rotation_rejection_fallback": "PASS",
-      "fullscreen_inside_tutorial": "PASS",
-      "rotation_pause": "PASS"
-    },
-    {
-      "engine": "chromium",
-      "failed_tutorial_retry": "PASS"
-    },
-    {
-      "engine": "chromium",
-      "skip_pending_tutorial": "PASS"
-    },
-    {
-      "engine": "firefox",
-      "gated_loading": "PASS",
-      "world_deferral": "PASS",
-      "native_host": "displayHost",
-      "rotation_rejection_fallback": "PASS",
-      "fullscreen_inside_tutorial": "PASS",
-      "rotation_pause": "PASS"
-    },
-    {
-      "engine": "firefox",
-      "failed_tutorial_retry": "PASS"
-    },
-    {
-      "engine": "firefox",
-      "skip_pending_tutorial": "PASS"
-    },
-    {
-      "engine": "webkit",
-      "gated_loading": "PASS",
-      "world_deferral": "PASS",
-      "native_host": "displayHost",
-      "rotation_rejection_fallback": "PASS",
-      "fullscreen_inside_tutorial": "PASS",
-      "rotation_pause": "PASS"
-    },
-    {
-      "engine": "webkit",
-      "failed_tutorial_retry": "PASS"
-    },
-    {
-      "engine": "webkit",
-      "skip_pending_tutorial": "PASS"
-    }
-  ],
-  "edge_cases": [
-    {
-      "engine": "chromium",
-      "silent_fullscreen_api": "PASS",
-      "rotated_touch_jump": "PASS",
-      "safe_exit": "PASS"
-    },
-    {
-      "engine": "chromium",
-      "file_protocol_game_and_tutorial": "PASS"
-    },
-    {
-      "engine": "firefox",
-      "silent_fullscreen_api": "PASS",
-      "rotated_touch_jump": "PASS",
-      "safe_exit": "PASS"
-    },
-    {
-      "engine": "firefox",
-      "file_protocol_game_and_tutorial": "PASS"
-    },
-    {
-      "engine": "webkit",
-      "silent_fullscreen_api": "PASS",
-      "rotated_touch_jump": "PASS",
-      "safe_exit": "PASS"
-    },
-    {
-      "engine": "webkit",
-      "file_protocol_game_and_tutorial": "PASS"
-    }
-  ],
-  "additional_checks": [
-    {
-      "engine": "chromium",
-      "frame_failure_retry": "PASS",
-      "desktop_resize_to_mobile_and_back": "PASS",
-      "keyboard_stars_and_no_outline": "PASS"
-    },
-    {
-      "engine": "firefox",
-      "frame_failure_retry": "PASS",
-      "desktop_resize_to_mobile_and_back": "PASS",
-      "keyboard_stars_and_no_outline": "PASS"
-    },
-    {
-      "engine": "webkit",
-      "frame_failure_retry": "PASS",
-      "desktop_resize_to_mobile_and_back": "PASS",
-      "keyboard_stars_and_no_outline": "PASS"
-    }
-  ],
-  "queued_start_cancellation": [
-    {
-      "engine": "chromium",
-      "queued_start_cancelled_by_fullscreen_pause": "PASS"
-    },
-    {
-      "engine": "firefox",
-      "queued_start_cancelled_by_fullscreen_pause": "PASS"
-    },
-    {
-      "engine": "webkit",
-      "queued_start_cancelled_by_fullscreen_pause": "PASS"
-    }
-  ],
-  "static_audit": {
-    "parsed_scripts": 5,
-    "dead_game_fields": [],
-    "duplicate_html_ids": [],
-    "missing_assets": [],
-    "unreferenced_assets": [],
-    "embedded_legacy_art": false,
-    "external_runtime_urls": []
-  },
-  "lint": "PASS: ESLint",
-  "format": "PASS: Prettier on scripts except packed masks, plus CSS/HTML/test",
-  "assets": [
-    {
-      "file": "back_game.webp",
-      "bytes": 266190,
-      "sha256": "17f0b2e16357d9618cbff0664f9587eb500ef8a5570fc23b0d4bd6cd0655ff64",
-      "unchanged_from_v48": true
-    },
-    {
-      "file": "banka.webp",
-      "bytes": 300658,
-      "sha256": "42f5edfd3f22919a733bf8361aea3095dba1398ce307de47a3bbe74d97439aca",
-      "unchanged_from_v48": true
-    },
-    {
-      "file": "cat_head_ember.webp",
-      "bytes": 62144,
-      "sha256": "4562780d51677b0602b96b417ceeac5d8660f3eef47aa0b14b564ea3684b971b",
-      "unchanged_from_v48": true
-    },
-    {
-      "file": "dial1.webp",
-      "bytes": 52142,
-      "sha256": "bd9747620f2568892c1bed4eec749c9e1dc623f319a3da29ec939ef2dbfbf4ed",
-      "unchanged_from_v48": true
-    },
-    {
-      "file": "dial2.webp",
-      "bytes": 31994,
-      "sha256": "8fe7c33637980e519c1eb000d604faf117534ea40590662896a5ab93275f66b9",
-      "unchanged_from_v48": true
-    },
-    {
-      "file": "dial3.webp",
-      "bytes": 32386,
-      "sha256": "fb9a8e3610676ff7c5b168ef6d58bb76b0d74d1994dc9bf78e97c3652b040655",
-      "unchanged_from_v48": true
-    },
-    {
-      "file": "favicon.svg",
-      "bytes": 449,
-      "sha256": "13a9a8acc0528dd50a20d33995f6411a0ac13a9ba0bfacec25d9e8c15a941b70",
-      "unchanged_from_v48": true
-    },
-    {
-      "file": "hp_fire_empty.webp",
-      "bytes": 5816,
-      "sha256": "b62c5d13004a9a42fc22790073532f7107c236f6dd4dfb97b92c07f2bf21e031",
-      "unchanged_from_v48": true
-    },
-    {
-      "file": "hp_fire_full.webp",
-      "bytes": 6952,
-      "sha256": "e75182f6c2cd8fcd69c01ad9aabccecc4dd0e70bfd41892e80be39a863e48cde",
-      "unchanged_from_v48": true
-    },
-    {
-      "file": "jump_spritesheet.webp",
-      "bytes": 261852,
-      "sha256": "aa9d56b7bbdd900d79e0380a6f54a0f9651c7c0889a76d6c13ef770f426b6f33",
-      "unchanged_from_v48": true
-    },
-    {
-      "file": "lunna.webp",
-      "bytes": 257726,
-      "sha256": "2df06c61887ad9d69f51d42325a6753b99ce0d61db72f6d7228f29d42aae8832",
-      "unchanged_from_v48": true
-    },
-    {
-      "file": "platform_game.webp",
-      "bytes": 32354,
-      "sha256": "0e4e18d76d647ecab65d6d5dc91ea159ab66b774f19db509e4e56ed9964bcc3c",
-      "unchanged_from_v48": true
-    },
-    {
-      "file": "primogem_ink.webp",
-      "bytes": 14284,
-      "sha256": "8c47c0c7af8c287154baeb638f36d6ec7480a758820603e25d093184f1aa25a2",
-      "unchanged_from_v48": true
-    },
-    {
-      "file": "run_spritesheet.webp",
-      "bytes": 261946,
-      "sha256": "f8b7a5c93286c52f377f7b9fed8204155f46f0f4994ff91f5e8c964a1d967f13",
-      "unchanged_from_v48": true
-    },
-    {
-      "file": "woodland_frame.svg",
-      "bytes": 1217,
-      "sha256": "8ab1fa9cf4b1636ba3d38333091aaa2960d07f644c6a4e9833bbb2729efa4bcc",
-      "unchanged_from_v48": true
-    }
-  ],
-  "collision_masks": "byte-identical to v48",
-  "physics": {
-    "stress": [
-      {
-        "fps": 15,
-        "seconds": 1860,
-        "maxObstacles": 4,
-        "maxParticles": 8
-      },
-      {
-        "fps": 20,
-        "seconds": 1860,
-        "maxObstacles": 4,
-        "maxParticles": 8
-      },
-      {
-        "fps": 30,
-        "seconds": 1860,
-        "maxObstacles": 4,
-        "maxParticles": 8
-      },
-      {
-        "fps": 60,
-        "seconds": 1860,
-        "maxObstacles": 4,
-        "maxParticles": 8
-      },
-      {
-        "fps": 120,
-        "seconds": 1860,
-        "maxObstacles": 4,
-        "maxParticles": 8
-      }
-    ],
-    "isolatedFloorJumps": [
-      {
-        "multiplier": 1,
-        "jumpAt": 2.3425
-      },
-      {
-        "multiplier": 2,
-        "jumpAt": 1.1496
-      },
-      {
-        "multiplier": 3,
-        "jumpAt": 0.7404
-      },
-      {
-        "multiplier": 4,
-        "jumpAt": 0.5345
-      },
-      {
-        "multiplier": 5,
-        "jumpAt": 0.4104
-      },
-      {
-        "multiplier": 6,
-        "jumpAt": 0.3293
-      },
-      {
-        "multiplier": 7,
-        "jumpAt": 0.2715
-      },
-      {
-        "multiplier": 8,
-        "jumpAt": 0.2293
-      },
-      {
-        "multiplier": 9,
-        "jumpAt": 0.1946
-      },
-      {
-        "multiplier": 10,
-        "jumpAt": 0.1678
-      },
-      {
-        "multiplier": 11,
-        "jumpAt": 0.1447
-      },
-      {
-        "multiplier": 12,
-        "jumpAt": 0.1255
-      },
-      {
-        "multiplier": 13,
-        "jumpAt": 0.1102
-      }
-    ],
-    "hangingMaskChecks": 1908
-  },
-  "physics_comparison": {
-    "base_version": 43,
-    "identical": [
-      "speedAt",
-      "jumpTiming",
-      "interpolateSpacing",
-      "spacingSafety",
-      "breathingRoom",
-      "patternSpacing",
-      "spacingProfiles",
-      "rushPatterns",
-      "patternTiers",
-      "touching"
-    ]
-  },
+  "version": 55,
+  "base_version": 54,
+  "date": "2026-11-13",
+  "engine": "chromium",
   "cleanup": {
-    "css_before_bytes": 169316,
-    "css_after_bytes": 26168,
-    "css_saved_bytes": 143148,
-    "removed": [
-      "three unused embedded artwork variables",
-      "unused scene metadata and rush counter",
-      "unconsumed state event",
-      "unconsumed marker classes",
-      "duplicate keyboard guards and CSS rules",
-      "separate image readiness implementation"
-    ]
+    "unused_animation_fields_removed": [
+      "version",
+      "jumpFrames",
+      "sceneHeight"
+    ],
+    "redundant_canvas_size_assignments_removed": 4,
+    "unused_render_call_argument_removed": true,
+    "redundant_css_background_removed": true
+  },
+  "static": {
+    "strict_unused_variable_and_parameter_check": "PASS",
+    "css_rules_reviewed": 238,
+    "unused_classes": [],
+    "duplicate_same_scope_css_declarations": [],
+    "fallback_styles": {
+      "noscript_fallback": "PASS",
+      "reduced_motion_styles": "PASS"
+    },
+    "all_runtime_assets_referenced": true,
+    "missing_assets": [],
+    "unused_assets": [],
+    "graphics": 15,
+    "audio": 1,
+    "asset_bytes_unchanged": true,
+    "collision_masks_unchanged": true,
+    "loader_unchanged": true,
+    "tutorial_and_viewport_code_unchanged": true
+  },
+  "layout": {
+    "viewport_profiles": 24,
+    "modes": 2,
+    "result_countdown_comparisons": 192,
+    "new_regressions": 0,
+    "tutorial_page_comparisons": 144,
+    "game_canvas_pixel_comparisons": 16
+  },
+  "behavior": {
+    "button_configs": 10,
+    "replay_configs": 12,
+    "audio_scenarios": 4,
+    "loading_and_storage_scenarios": 4,
+    "status": "PASS"
+  },
+  "physics": {
+    "status": "PASS",
+    "simulated_seconds_per_fps": 1860,
+    "fps": [
+      15,
+      20,
+      30,
+      60,
+      120
+    ],
+    "valid_jumps_at_multipliers": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13
+    ],
+    "hanging_collision_checks": 1908
   },
   "limits": [
-    "Automated browsers and visual screenshots; no physical iPhone test",
-    "No hardware FPS, battery or network benchmark",
-    "Synthetic stress uses fixed randomness and invulnerability",
-    "Browser system panels depend on browser support",
-    "Manual GitHub publication required"
+    "Browser tests used Chromium emulation; physical phones, Firefox and WebKit were not tested in this audit."
   ]
 }
