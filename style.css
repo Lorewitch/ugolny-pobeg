@@ -1,5 +1,6 @@
 :root {
   color-scheme: dark;
+  -webkit-tap-highlight-color: transparent;
   --text: #fff0e4;
 }
 * {
