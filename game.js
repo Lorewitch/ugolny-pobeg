@@ -247,18 +247,78 @@
     particles: [],
     noteUntil: 0,
     lastMilestone: 0,
-    sound: false,
+    music: true,
   };
   ui.best.innerHTML = `${pad(game.best)} <small>м</small>`;
 
-  let audio = null;
-  function chirp(freq, duration = 0.09, type = "sine", volume = 0.08, endFreq) {
-    if (!game.sound) return;
+  // The MP3 includes 250 ms of cyclic context on both sides. Loop only the
+  // original samples so compression cannot add a silent gap at the seam.
+  const MUSIC = {
+    url: "assets/ugolny-pobeg.mp3?v=1",
+    start: 0.25,
+    end: 66.60525,
+    volume: 0.2,
+  };
+  let audio = null,
+    musicBuffer = null,
+    musicLoading = null,
+    musicSource = null,
+    musicGain = null;
+
+  function ensureAudio() {
     try {
       const AudioContext = window.AudioContext || window.webkitAudioContext;
-      if (!AudioContext) return;
+      if (!AudioContext) return null;
       audio = audio || new AudioContext();
-      if (audio.state === "suspended") audio.resume().catch(() => {});
+      if (!document.hidden && audio.state !== "running")
+        audio.resume().catch(() => {});
+      return audio;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  function startMusic() {
+    if (!audio || !musicBuffer || musicSource || document.hidden) return;
+    musicGain = audio.createGain();
+    musicGain.gain.value = game.music ? MUSIC.volume : 0;
+    musicGain.connect(audio.destination);
+    musicSource = audio.createBufferSource();
+    musicSource.buffer = musicBuffer;
+    musicSource.loop = true;
+    musicSource.loopStart = MUSIC.start;
+    musicSource.loopEnd = MUSIC.end;
+    musicSource.connect(musicGain);
+    musicSource.start(0, MUSIC.start);
+  }
+
+  function unlockAudio() {
+    const context = ensureAudio();
+    if (!context || document.hidden) return;
+    if (musicBuffer) {
+      startMusic();
+    } else if (!musicLoading) {
+      // Load once, without delaying the artwork, tutorial or start of a run.
+      musicLoading = fetch(MUSIC.url)
+        .then((response) => {
+          if (!response.ok) throw new Error("Music unavailable");
+          return response.arrayBuffer();
+        })
+        .then((data) => context.decodeAudioData(data))
+        .then((buffer) => {
+          musicBuffer = buffer;
+          startMusic();
+        })
+        .catch(() => {
+          // Effects remain available; a later gesture can retry the track.
+          musicLoading = null;
+        });
+    }
+  }
+
+  function chirp(freq, duration = 0.09, type = "sine", volume = 0.08, endFreq) {
+    if (document.hidden || !ensureAudio()) return;
+    try {
       const osc = audio.createOscillator();
       const gain = audio.createGain();
       const t = audio.currentTime;
@@ -277,7 +337,7 @@
       osc.start(t);
       osc.stop(t + duration + 0.015);
     } catch (_) {
-      /* sound is optional */
+      /* An unavailable audio device must not interrupt the game. */
     }
   }
   const sounds = {
@@ -1340,14 +1400,32 @@
   ui.pauseBtn.addEventListener("click", () => togglePause());
   ui.restartBtn.addEventListener("click", restartRun);
   ui.soundBtn.addEventListener("click", () => {
-    game.sound = !game.sound;
-    ui.soundBtn.setAttribute("aria-pressed", String(game.sound));
+    game.music = !game.music;
+    unlockAudio();
+    if (musicGain) {
+      musicGain.gain.cancelScheduledValues(audio.currentTime);
+      musicGain.gain.setTargetAtTime(
+        game.music ? MUSIC.volume : 0,
+        audio.currentTime,
+        0.015,
+      );
+    }
+    ui.soundBtn.setAttribute("aria-pressed", String(game.music));
     ui.soundBtn.setAttribute(
       "aria-label",
-      game.sound ? "Выключить звук" : "Включить звук",
+      game.music ? "Выключить музыку" : "Включить музыку",
     );
-    if (game.sound) chirp(850, 0.13, "sine", 0.08, 1150);
+    ui.soundBtn.title = game.music
+      ? "Выключить музыку (M)"
+      : "Включить музыку (M)";
   });
+  // Browsers unlock sound on the first real tap or key press, including the
+  // tutorial. Muting the music never changes the effects or stops their context.
+  document.addEventListener("pointerdown", unlockAudio, {
+    capture: true,
+    passive: true,
+  });
+  document.addEventListener("keydown", unlockAudio, { capture: true });
   const jumpKeys = new Set(["Space", "ArrowUp", "KeyW"]);
   window.addEventListener("keydown", (ev) => {
     if (
@@ -1387,7 +1465,12 @@
   });
   window.addEventListener("blur", () => togglePause(true));
   document.addEventListener("visibilitychange", () => {
-    if (document.hidden) togglePause(true);
+    if (document.hidden) {
+      togglePause(true);
+      if (audio) audio.suspend().catch(() => {});
+    } else if (audio) {
+      unlockAudio();
+    }
   });
   window.addEventListener("pagehide", () =>
     storeBest(Math.max(game.best, game.score)),

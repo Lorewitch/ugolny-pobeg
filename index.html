@@ -8,7 +8,7 @@
     />
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self' file:; style-src 'self' file: 'unsafe-inline'; img-src 'self' file: data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"
+      content="default-src 'self'; script-src 'self' file:; style-src 'self' file: 'unsafe-inline'; img-src 'self' file: data:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'"
     />
     <meta name="theme-color" content="#19172c" />
     <meta
@@ -21,7 +21,7 @@
     <script src="animation-config.js?v=49" defer></script>
     <script src="assets-loader.js?v=49" defer></script>
     <script src="collision-masks.js?v=47" defer></script>
-    <script src="game.js?v=49" defer></script>
+    <script src="game.js?v=51" defer></script>
     <script src="features.js?v=49" defer></script>
   </head>
   <body>
@@ -110,9 +110,9 @@
                   class="icon-btn"
                   id="soundBtn"
                   type="button"
-                  aria-label="Включить звук"
-                  aria-pressed="false"
-                  title="Звук (M)"
+                  aria-label="Выключить музыку"
+                  aria-pressed="true"
+                  title="Выключить музыку (M)"
                 >
                   ♫
                 </button>
