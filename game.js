@@ -1440,8 +1440,19 @@
       ev.target?.closest?.('input, textarea, select, [contenteditable="true"]')
     )
       return;
-    // Space activates the focused button natively; it must not also jump/restart.
-    if (ev.code === "Space" && ev.target?.closest?.("button, a")) return;
+    const toolbarButton = ev.target?.closest?.(".hud-actions button");
+    // Toolbar actions use clicks/taps or their own shortcuts. Focus must never
+    // turn the jump key into a music, pause, restart or fullscreen control.
+    if (toolbarButton && ev.code === "Enter") {
+      ev.preventDefault();
+      return;
+    }
+    if (
+      ev.code === "Space" &&
+      ev.target?.closest?.("button, a") &&
+      !toolbarButton
+    )
+      return;
     if (jumpKeys.has(ev.code)) {
       ev.preventDefault();
       if (ev.repeat) return;
@@ -1457,6 +1468,13 @@
       ev.preventDefault();
       restartRun();
     }
+  });
+  window.addEventListener("keyup", (ev) => {
+    if (
+      (ev.code === "Space" || ev.code === "Enter") &&
+      ev.target?.closest?.(".hud-actions button")
+    )
+      ev.preventDefault();
   });
   canvas.addEventListener("pointerdown", (ev) => {
     if (ev.isPrimary === false || ev.button !== 0 || isMenuOpen()) return;
